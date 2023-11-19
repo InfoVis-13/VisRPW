@@ -3,6 +3,8 @@ import * as d3 from "d3";
 
 import DataContext from './DataContext.js';
 
+import config from '../data/config.json';
+
 const SummaryAP = (props) => {
     
     const dataContext = React.useContext(DataContext);
@@ -11,7 +13,7 @@ const SummaryAP = (props) => {
 
     useEffect(() => {  
         
-        d3.select(sPlot.current)
+        /*d3.select(sPlot.current)
         .selectAll('rect')     
         .data([1234])
         .enter()
@@ -29,7 +31,20 @@ const SummaryAP = (props) => {
         .append('text')  
         .attr("x", 20)
 	    .attr("y", 20)
-        .text("summary AP")
+        .text("summary AP")*/
+
+        console.log( config );
+
+        d3.select(sPlot.current)
+        .selectAll('text')
+        .data(Object.keys(config))
+        .enter()
+        .append('text')
+        .attr("x",20)
+        .attr("y",(d,i)=>{console.log(d,i)
+            return 20*(i+1)})
+        .text((d,i)=>d+" - "+config["AP"+(i+1)]["band"])
+
     }, []);
 
 	return (
