@@ -11,7 +11,7 @@ const SummaryDev = (props) => {
 
     useEffect(() => {  
         
-        d3.select(sPlot.current)
+        /*d3.select(sPlot.current)
         .selectAll('rect')     
         .data([1234])
         .enter()
@@ -29,7 +29,41 @@ const SummaryDev = (props) => {
         .append('text')  
         .attr("x", 20)
 	    .attr("y", 20)
-        .text("summary Dev")
+        .text("summary Dev")*/
+
+        const count = [220, 6, 3];
+
+        d3.select(sPlot.current)
+        .selectAll('rect')     
+        .data(['green','orange','red'])
+        .enter()
+        .append('rect')  
+        .attr("x", 2)
+        .attr("y",(d,i)=> 20*i+7)
+        .attr("height", 17)
+        .attr("width", 17)
+        .attr("fill",d=>d)
+
+        d3.select(sPlot.current)
+        .selectAll('.text')
+        .data(['good','warning','bad'])
+        .enter()
+        .append('text')
+        .attr("x",25)
+        .attr("y",(d,i)=>20*(i+1)+1)
+        .text((d,i)=>" - "+count[i])
+
+        var  badips = ['3','4','5'];
+
+        d3.select(sPlot.current)
+        .selectAll('.text')
+        .data(badips)
+        .enter()
+        .append('text')
+        .attr("x",30)
+        .attr("y",(d,i)=>20*(i)+85)
+        .text((d,i)=> (" ㄴ T"+d))
+
     }, []);
 
 	return (
