@@ -10,7 +10,7 @@ import TotalSummary from "./TotalSummary.js";
 
 const margin = 25;
 const graphWidth = 1000;
-const graphHeight = 50;
+const graphHeight = 200;
 const mainWidth = 500;
 const mainHeight = 500;
 const APWidth = 200;
