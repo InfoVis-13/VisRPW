@@ -2,14 +2,12 @@ import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 
 import DataContext from './DataContext.js';
-import apdata from "../data/ap1_dummy.json";
+
 const GraphPlot = (props) => {
     
     const dataContext = React.useContext(DataContext);
     
     const sPlot = useRef(null);  
-
-    console.log(apdata[0]["total throughput"])
 
     useEffect(() => {  
         /*console.log("graph plot")
@@ -33,11 +31,13 @@ const GraphPlot = (props) => {
 	    .attr("y", 20)
         .text("Graph Plot") */
 
-        const X = d3.map(apdata, d => d["time"]);
-        const Y = d3.map(apdata, d => d["total throughput"]);
+        if(props.apdata == undefined) return
+
+        const X = d3.map(props.apdata, d => d["time"]);
+        const Y = d3.map(props.apdata, d => d["total throughput"]);
         const I = d3.range(X.length);
         let defined = (d, i) => !isNaN(X[i]) && !isNaN(Y[i]);
-        const D = d3.map(apdata, defined);
+        const D = d3.map(props.apdata, defined);
 
         const YMargin = 50;
         // Compute default domains.

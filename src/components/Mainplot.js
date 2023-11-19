@@ -8,6 +8,8 @@ import SummaryDev from "./SummaryDev.js";
 import ControlPanel from "./ControlPanel.js";
 import TotalSummary from "./TotalSummary.js";
 
+import apdata from "../data/ap1_dummy.json";
+
 const margin = 25;
 const graphWidth = 1000;
 const graphHeight = 200;
@@ -53,7 +55,7 @@ const Mainplot = (props) => {
 	return (
 		<div>
       <div style={{marginLeft: margin, marginTop: margin, width:graphWidth, height: graphHeight}}>
-        <GraphPlot width={graphWidth} height={graphHeight}/>
+        <GraphPlot apdata={apdata} width={graphWidth} height={graphHeight}/>
       </div> 
       <div style={{ display:"flex"}}>
         <div style={{marginLeft: margin, marginTop: margin, width:APWidth, height: APHeight}}>
