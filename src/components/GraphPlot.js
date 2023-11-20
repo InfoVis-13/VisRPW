@@ -79,7 +79,7 @@ const GraphPlot = (props) => {
     }, []);
 
 	return (
-    <div>
+    <div style={{border: '1px solid', borderRadius: 8, padding: 2}}>
         <svg ref={sPlot} width={props.width} height={props.height}> 
 		</svg>       
     </div>
