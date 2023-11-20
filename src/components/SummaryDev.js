@@ -1,7 +1,42 @@
 import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
+import withStyles from '@mui/styles/withStyles';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-import DataContext from './DataContext.js';
+const StyledAccordionSummary = withStyles({
+    fontWeight: "bold",
+    root: {
+        minHeight: 30,
+        maxHeight: 30,
+        marginTop: 5,
+        // backgroundColor: '#a5a5a5',
+        '&.Mui-expanded': {
+          minHeight: 30,
+          maxHeight: 30,
+        //   backgroundColor: '#a5a5a5',
+        }
+    },
+    content: {
+        margin: 0,
+        '&.Mui-expanded': {
+          margin: 0
+        }
+    },
+    expandIcon: {
+        order: -1
+    }
+    })(AccordionSummary);
+
+const StyledTypography = withStyles({
+    root: {
+        fontSize: 16,
+        fontWeight: "bold",
+    }
+})(Typography);
 
 const SummaryDev = (props) => {
     
@@ -10,6 +45,7 @@ const SummaryDev = (props) => {
     
     const criteria = [1.0, 5.0, 15.0, 25.0];
     const labels = ["veryPoor", "poor", "normal", "good", "veryGood"];
+    const color = ["#FF0000", "#FF8000", "#FFFF00", "#80FF00", "#00FF00"];
 
     useEffect(() => {  
         
@@ -64,23 +100,35 @@ const SummaryDev = (props) => {
             .enter()
             .append('rect')  
             .attr("x", 10)
-            .attr("y",(d,i)=> 20*i+30)
+            .attr("y",(d,i)=> 20*i+7)
             .attr("height", 17)
             .attr("width", 17)
-            .attr("fill", "red");
+            .attr("fill", (d,i)=>color[i]);
 
         sPlotSvg.selectAll('text')
             .data(plotData)
             .join('text')
-            .attr("x",40)
-            .attr("y",(d,i)=>20*(i+1)+28)
+            .attr("x",35)
+            .attr("y",(d,i)=>20*(i+1)+1)
+            .attr("font-size", 15)
             .text((d,i)=>`${d.name} - ${d.count} (${d.ratio}%)`);
 
     }, []);
 
 	return (
-    <div style={{marginTop: 9.5 ,border: '1px dashed'}}>
-        <svg ref={sPlot} width={props.width} height={props.height} />  
+    <div style={{marginTop: 9.5, width: props.width, height: props.height, border: '1px solid'}}>
+        <Accordion sx={{ boxShadow:"none" }} defaultExpanded={true}>
+            <StyledAccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="AP1-content"
+                id="AP1-header"
+            >
+                <StyledTypography>AP 1</StyledTypography>
+            </StyledAccordionSummary>
+            <AccordionDetails sx={{ p: 1}}>
+                <svg ref={sPlot} width={props.width} height={props.height/2} />  
+            </AccordionDetails>
+        </Accordion>
     </div>
     )
 };
