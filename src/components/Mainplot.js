@@ -16,7 +16,7 @@ const graphHeight = 200;
 const mainWidth = 550;
 const mainHeight = 550;
 const APWidth = 200;
-const APHeight = 275;
+const APHeight = 270;
 const ControlWidth = 250;
 const ControlHeight = 550;
 
@@ -58,9 +58,9 @@ const Mainplot = (props) => {
         <GraphPlot apdata={apdata} width={graphWidth} height={graphHeight}/>
       </div> 
       <div style={{ display:"flex"}}>
-        <div style={{marginLeft: margin, marginTop: margin, width:APWidth, height: APHeight*2, border: '1px dashed'}}>
+        <div style={{marginLeft: margin, marginTop: margin, width:APWidth, height: APHeight*2}}>
             <SummaryAP width={APWidth} height={APHeight}/>
-            <SummaryDev width={APWidth} height={APHeight}/>
+            <SummaryDev apdata={apdata} width={APWidth} height={APHeight}/>
         </div>
         <div style={{marginLeft: (margin), marginTop: margin, width:mainWidth, height: mainHeight}}>
           <svg ref={smainPlot} width={mainWidth} height={mainHeight}> 

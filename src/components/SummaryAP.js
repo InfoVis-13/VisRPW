@@ -48,7 +48,7 @@ const SummaryAP = (props) => {
     }, []);
 
 	return (
-    <div>
+    <div style={{border: '1px solid', borderRadius: 8}}>
         <svg ref={sPlot} width={props.width} height={props.height}> 
 		</svg>       
     </div>
