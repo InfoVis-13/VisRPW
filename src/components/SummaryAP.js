@@ -35,15 +35,30 @@ const SummaryAP = (props) => {
 
         console.log( config );
 
+        const arrtext = [];
+        let confkeys = Object.keys(config)
+        for (let i = 0; i < confkeys.length; i++)
+        {
+               arrtext.push(confkeys[i])
+               let contents = Object.keys(config[confkeys[i]]);
+               console.log(contents);
+               for(let j = 0; j < contents.length; j++)
+               {
+                    arrtext.push(" ㄴ " + contents[j] + " : " + config[confkeys[i]][contents[j]]);
+               }
+        }
+
+        var textheight = 0;
+
         d3.select(sPlot.current)
         .selectAll('text')
-        .data(Object.keys(config))
+        .data(arrtext)
         .enter()
         .append('text')
         .attr("x",20)
-        .attr("y",(d,i)=>{console.log(d,i)
-            return 20*(i+1)})
-        .text((d,i)=>d+" - "+config["AP"+(i+1)]["band"])
+        .attr("y",(d,i)=>{textheight += 20; return textheight;})
+        .text((d,i)=>d)
+        //.style("font-size", "10px")
 
     }, []);
 
