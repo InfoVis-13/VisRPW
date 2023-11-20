@@ -13,11 +13,9 @@ const StyledAccordionSummary = withStyles({
         minHeight: 30,
         maxHeight: 30,
         marginTop: 5,
-        // backgroundColor: '#a5a5a5',
         '&.Mui-expanded': {
           minHeight: 30,
           maxHeight: 30,
-        //   backgroundColor: '#a5a5a5',
         }
     },
     content: {
@@ -116,7 +114,7 @@ const SummaryDev = (props) => {
     }, []);
 
 	return (
-    <div style={{marginTop: 9.5, width: props.width, height: props.height, border: '1px solid'}}>
+    <div style={{marginTop: 9.5, width: props.width, height: props.height, border: '1px solid', borderRadius: 8}}>
         <Accordion sx={{ boxShadow:"none" }} defaultExpanded={true}>
             <StyledAccordionSummary
                 expandIcon={<ExpandMoreIcon />}
