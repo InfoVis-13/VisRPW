@@ -5,12 +5,5 @@
         "channel": "1",
         "bandwidth": "40 MHz",
         "txpower": "20 dBm"
-    },
-    "AP2": {
-        "standard": "WiFi 5",
-        "band": "2.4 GHz",
-        "channel": "1",
-        "bandwidth": "40 MHz",
-        "txpower": "20 dBm"
     }
 }
