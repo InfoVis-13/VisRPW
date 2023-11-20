@@ -10,15 +10,15 @@ import TotalSummary from "./TotalSummary.js";
 
 import apdata from "../data/ap1_dummy.json";
 
-const margin = 25;
-const graphWidth = 1000;
+const margin = 15;
+const graphWidth = 1050;
 const graphHeight = 200;
-const mainWidth = 500;
-const mainHeight = 500;
+const mainWidth = 550;
+const mainHeight = 550;
 const APWidth = 200;
-const APHeight = 250;
-const ControlWidth = 300;
-const ControlHeight = 500;
+const APHeight = 275;
+const ControlWidth = 250;
+const ControlHeight = 550;
 
 const Mainplot = (props) => {
  
@@ -58,7 +58,7 @@ const Mainplot = (props) => {
         <GraphPlot apdata={apdata} width={graphWidth} height={graphHeight}/>
       </div> 
       <div style={{ display:"flex"}}>
-        <div style={{marginLeft: margin, marginTop: margin, width:APWidth, height: APHeight}}>
+        <div style={{marginLeft: margin, marginTop: margin, width:APWidth, height: APHeight*2, border: '1px dashed'}}>
             <SummaryAP width={APWidth} height={APHeight}/>
             <SummaryDev width={APWidth} height={APHeight}/>
         </div>
