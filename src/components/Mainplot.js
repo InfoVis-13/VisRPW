@@ -22,18 +22,48 @@ const ControlHeight = 510;
 
 const Mainplot = (props) => {
  
-  const data = apdata.map(d => ({...d, number: parseInt(d.number)}));
+  const data = apdata.map(d => ({
+    ...d, 
+    time: parseFloat(d.time),
+    section: parseInt(d.section), 
+    number: parseInt(d.number)
+  }));
   console.log(data);
  
   const smainPlot = useRef(null);      
 
   const criteria = [1.0, 5.0, 15.0, 25.0];
   const labels = ["veryPoor", "poor", "normal", "good", "veryGood"];
-  const color = ["#FF0000", "#FF8000", "#FFFF00", "#80FF00", "#00FF00"];
+  const color = ["#FF0000", "#FF8000", "#FFD400", "#80FF00", "#009000"];
   
   useEffect(() => {
      
       const mainSvg = d3.select(smainPlot.current);
+
+      const statsData = data.map(d => {
+          let eachData = {
+              "time" : d.time,
+              "number": d.number,
+              "veryGood": 0,
+              "good" : 0,
+              "normal": 0,
+              "poor" : 0,
+              "veryPoor" : 0
+          };
+          let cnt = 0;
+          for(let j=0; ; j++){
+              if (d[`sta${j+1}`] === -1.0) continue;
+              let labIdx = 0;
+              for(labIdx; labIdx<criteria.length; labIdx++){
+                  if(d[`sta${j+1}`] <= criteria[labIdx]) break;
+              }
+              eachData[labels[labIdx]]++;
+              cnt++;
+              if (cnt === d.number) break;
+          }
+          return eachData;
+      });
+      console.log(statsData);
       
       let xScale = d3.scaleLinear()
                         .domain([
@@ -49,6 +79,8 @@ const Mainplot = (props) => {
                       ])
                       .range([mainHeight, 0]);
       
+      let colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+      
       let xAxis = d3.axisBottom().scale(xScale);
       let yAxis = d3.axisLeft().scale(yScale);
       
@@ -62,30 +94,88 @@ const Mainplot = (props) => {
           .attr("id", "y-axis")
           .call(yAxis);
       
-      mainSvg.append("g")
-          .attr("transform", `translate(${margin}, ${margin})`)
-          .selectAll("circle")
-          .data(data)
-          .join("circle")
-          .attr("cx", d => xScale(d.time))
-          .attr("cy", d => yScale(d.number))
-          .attr("r", 2)
-          .attr("fill", "steelblue");
-                           
-      const line = d3.line()
-                      .defined(i => data[i])
-                  
-                      .x(d => xScale(d.time))
-                      .y(d => yScale(d.number));
+      // mainSvg.append("g")
+      //     .attr("transform", `translate(${margin}, ${margin})`)
+      //     .selectAll("circle")
+      //     .data(data)
+      //     .join("circle")
+      //     .attr("cx", d => xScale(d.time))
+      //     .attr("cy", d => yScale(d.number))
+      //     .attr("r", 2)
+      //     .attr("fill", "steelblue");
       
-      mainSvg.append("g")
-        .selectAll("path")
-        .data(data)
-        .join("path")
-        .attr("d", line)
-        .attr("fill", "none")
-        .attr("stroke", "steelblue")
-        .attr("stroke-width", 1.5);
+      // for(let i=0; i<labels.length; i++) {
+      //     mainSvg.append("g")
+      //     .attr("transform", `translate(${margin}, ${margin})`)
+      //     .selectAll("circle")
+      //     .data(statsData)
+      //     .join("circle")
+      //     .attr("cx", d => xScale(d.time))
+      //     .attr("cy", d => yScale(d[labels[i]]))
+      //     .attr("r", 2)
+      //     .attr("fill", colorScale(i));
+      // }
+                           
+      // const area = d3.area()
+      //               .x0((d, i) => xScale(d.time))
+      //               .x1((d, i) => xScale(d.time))
+      //               .y0(yScale(0))
+      //               .y1(d => yScale(d.number))
+      //               .curve(d3.curveLinear);
+      
+      // mainSvg.append("path")
+      //   .attr("transform", `translate(${margin}, ${margin})`)
+      //   .attr("fill", "steelblue")
+      //   .attr("stroke", "steelblue")
+      //   .attr("stroke-width", 1.5)
+      //   .attr("d", area(data));
+      
+      // for(let labIdx=labels.length-1; labIdx>=0; labIdx--) {
+      //   const plotData = statsData.map(d => {
+      //     let cumulativeVal = 0;
+      //     for(let j=labIdx; j>=0; j--) {
+      //       cumulativeVal += d[labels[j]];
+      //     }
+      //     return {
+      //       "time": d.time,
+      //       "number": cumulativeVal
+      //     };
+      //   });
+      //   console.log(plotData);
+      //   mainSvg.append("path")
+      //   .attr("transform", `translate(${margin}, ${margin})`)
+      //   .attr("fill", colorScale(labIdx))
+      //   .attr("stroke", colorScale(labIdx))
+      //   // .attr("stroke-width", 1.5)
+      //   .attr("d", area(plotData));
+      // }
+
+      for(let labIdx=labels.length-1; labIdx>=0; labIdx--) {
+        const plotData = statsData.map(d => {
+          let cumulativeVal = 0;
+          for(let j=labIdx; j>=0; j--) {
+            cumulativeVal += d[labels[j]];
+          }
+          return {
+            "time": d.time,
+            "number": cumulativeVal
+          };
+        });
+        console.log(plotData);
+        mainSvg.append("g")
+        .attr("transform", `translate(${margin}, ${margin})`)
+        .selectAll("rect")
+        .data(plotData)
+        .join("rect")
+        .attr("x", d => xScale(d.time))
+        .attr("y", d => yScale(d.number))
+        .attr("width", xScale(plotData[1].time)-xScale(plotData[0].time))
+        .attr("height", d => yScale(0)-yScale(d.number))
+        .attr("stroke", color[labIdx])
+        .attr("fill", color[labIdx]);
+      }
+
+
       
 	}, []);
  
@@ -98,7 +188,7 @@ const Mainplot = (props) => {
       <div style={{ display:"flex"}}>
         <div style={{marginLeft: margin, marginTop: margin, width:APWidth, height: APHeight*2}}>
             <SummaryAP width={APWidth} height={APHeight}/>
-            <SummaryDev apdata={apdata} width={APWidth} height={APHeight}/>
+            <SummaryDev apdata={data} width={APWidth} height={APHeight}/>
         </div>
         <div style={{marginLeft: (margin), marginTop: margin, width:mainWidth+2*margin, height: mainHeight+2*margin}}>
           <svg ref={smainPlot} width={mainWidth+2*margin} height={mainHeight+2*margin}> 
@@ -109,7 +199,7 @@ const Mainplot = (props) => {
         </div>
       </div>
       <div style={{marginLeft: margin, marginTop: margin, width:graphWidth, height: graphHeight}}>
-        <TotalSummary width={graphWidth} height={graphHeight}/>
+        <TotalSummary width={graphWidth} height={50}/>
       </div> 
 		</div>
 	)
