@@ -10,64 +10,102 @@ import TotalSummary from "./TotalSummary.js";
 
 import apdata from "../data/ap1_dummy.json";
 
-const margin = 15;
-const graphWidth = 1050;
+const margin = 20;
+const graphWidth = 1040;
 const graphHeight = 200;
-const mainWidth = 550;
-const mainHeight = 550;
+const mainWidth = 510;
+const mainHeight = 510;
 const APWidth = 200;
-const APHeight = 275;
+const APHeight = 270;
 const ControlWidth = 250;
-const ControlHeight = 550;
+const ControlHeight = 510;
 
 const Mainplot = (props) => {
  
-  const dataContext = React.useContext(DataContext);
+  const data = apdata.map(d => ({...d, number: parseInt(d.number)}));
+  console.log(data);
  
   const smainPlot = useRef(null);      
-  const graphref = GraphPlot({width:{graphWidth}, height:{graphHeight}});
 
-  	useEffect(() => {
+  const criteria = [1.0, 5.0, 15.0, 25.0];
+  const labels = ["veryPoor", "poor", "normal", "good", "veryGood"];
+  const color = ["#FF0000", "#FF8000", "#FFFF00", "#80FF00", "#00FF00"];
+  
+  useEffect(() => {
      
-      console.log("main plot")
-      d3.select(smainPlot.current)
-      .selectAll('rect')
-      .data([1234])
-      .enter()
-      .append('rect') 
-      .attr("x", 0)
-      .attr("y", 0)
-      .attr("height", mainHeight)
-      .attr("width", mainWidth)
-      .attr("fill", 'red')
-
-      d3.select(smainPlot.current)
-      .selectAll('text')     
-      .data([1234])
-      .enter()
-      .append('text')  
-      .attr("x", 20)
-	    .attr("y", 20)
-      .text("Main Plot")
+      const mainSvg = d3.select(smainPlot.current);
+      
+      let xScale = d3.scaleLinear()
+                        .domain([
+                            d3.min(data, d => d.time),
+                            d3.max(data, d => d.time)
+                        ])
+                        .range([0, mainWidth]);
+    
+      let yScale = d3.scaleLinear()
+                      .domain([
+                          0,
+                          d3.max(data, d => d.number)
+                      ])
+                      .range([mainHeight, 0]);
+      
+      let xAxis = d3.axisBottom().scale(xScale);
+      let yAxis = d3.axisLeft().scale(yScale);
+      
+      mainSvg.append("g")
+      .attr("transform", `translate(${margin}, ${mainHeight + margin})`)
+      .attr("id", "x-axis")
+      .call(xAxis);
+  
+      mainSvg.append("g")
+          .attr("transform", `translate(${margin}, ${margin})`)
+          .attr("id", "y-axis")
+          .call(yAxis);
+      
+      mainSvg.append("g")
+          .attr("transform", `translate(${margin}, ${margin})`)
+          .selectAll("circle")
+          .data(data)
+          .join("circle")
+          .attr("cx", d => xScale(d.time))
+          .attr("cy", d => yScale(d.number))
+          .attr("r", 2)
+          .attr("fill", "steelblue");
+                           
+      const line = d3.line()
+                      .defined(i => data[i])
+                  
+                      .x(d => xScale(d.time))
+                      .y(d => yScale(d.number));
+      
+      mainSvg.append("g")
+        .selectAll("path")
+        .data(data)
+        .join("path")
+        .attr("d", line)
+        .attr("fill", "none")
+        .attr("stroke", "steelblue")
+        .attr("stroke-width", 1.5);
       
 	}, []);
  
 	return (
 		<div>
+      <h1>VisRPW</h1>
       <div style={{marginLeft: margin, marginTop: margin, width:graphWidth, height: graphHeight}}>
         <GraphPlot apdata={apdata} width={graphWidth} height={graphHeight}/>
       </div> 
       <div style={{ display:"flex"}}>
-        <div style={{marginLeft: margin, marginTop: margin, width:APWidth, height: APHeight*2, border: '1px dashed'}}>
+        <div style={{marginLeft: margin, marginTop: margin, width:APWidth, height: APHeight*2}}>
             <SummaryAP width={APWidth} height={APHeight}/>
-            <SummaryDev width={APWidth} height={APHeight}/>
+            <SummaryDev apdata={apdata} width={APWidth} height={APHeight}/>
         </div>
-        <div style={{marginLeft: (margin), marginTop: margin, width:mainWidth, height: mainHeight}}>
-          <svg ref={smainPlot} width={mainWidth} height={mainHeight}> 
+        <div style={{marginLeft: (margin), marginTop: margin, width:mainWidth+2*margin, height: mainHeight+2*margin}}>
+          <svg ref={smainPlot} width={mainWidth+2*margin} height={mainHeight+2*margin}> 
           </svg>      
         </div>
-        <div style={{marginLeft: margin, marginTop: margin, width:ControlWidth, height: ControlHeight}}>
-            <ControlPanel width={ControlWidth} height={ControlHeight}/>
+        <div style={{marginLeft: margin, marginTop: margin, width:ControlWidth, height: ControlHeight+2*margin}}>
+            <ControlPanel width={ControlWidth} height={ControlHeight} margin={margin}/>
         </div>
       </div>
       <div style={{marginLeft: margin, marginTop: margin, width:graphWidth, height: graphHeight}}>

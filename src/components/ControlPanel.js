@@ -11,31 +11,12 @@ const ControlPanel = (props) => {
 
     useEffect(() => {  
         
-        d3.select(sPlot.current)
-        .selectAll('rect')     
-        .data([1234])
-        .enter()
-        .append('rect')  
-        .attr("x", 0)
-        .attr("y", 0)
-        .attr("height", props.height)
-        .attr("width", props.width)
-        .attr("fill",'blue')
-
-        d3.select(sPlot.current)
-        .selectAll('text')     
-        .data([123])
-        .enter()
-        .append('text')  
-        .attr("x", 20)
-	    .attr("y", 20)
-        .text("Control Panel")
     }, []);
 
 	return (
-    <div>
-        <svg ref={sPlot} width={props.width} height={props.height}> 
-		</svg>       
+    <div style={{border: '1px solid', borderRadius: 8, width: props.width, height: props.height+2*props.margin}}>
+        <p style={{marginLeft: 10}}>Control Panel</p>
+        <svg ref={sPlot} width={props.width} height={props.height}/>      
     </div>
     )
 };
