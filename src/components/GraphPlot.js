@@ -104,9 +104,18 @@ const GraphPlot = (props) => {
         .attr("y", d => baryScale(d[1]))
         .attr("height", d => baryScale(0)-(baryScale(d[1])))
         .attr("width", d => barxScale(d[0]))
-        .attr("fill",d=>color[d[2]])
+        .attr("fill","skyblue")
+
         .attr("stroke","black")
-        
+
+        d3.select(sPlot.current)
+        .selectAll(".text")
+        .data(["The number of devices"])
+        .join("text")
+        .attr("x",35)
+        .attr("y",20)
+        .attr("font-size", 14)
+        .text(d=>d)
         
         d3.select(sPlot.current).append("g")
         .attr("transform", `translate(${margin},${props.height-margin})`)
@@ -149,6 +158,15 @@ const GraphPlot = (props) => {
             .attr("fill", "none")
             .attr("stroke", "black")
             .attr("d", line(I));
+
+            d3.select(sPlot.current)
+            .selectAll(".text")
+            .data(["Total throughput"])
+            .join("text")
+            .attr("x",props.width/2+35)
+            .attr("y",20)
+            .attr("font-size", 14)
+            .text(d=>d)
 
             d3.select(sPlot.current).append("g")
             .attr("transform", `translate(${0},${props.height-margin})`)
