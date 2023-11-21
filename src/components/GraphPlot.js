@@ -105,6 +105,7 @@ const GraphPlot = (props) => {
         .attr("height", d => baryScale(0)-(baryScale(d[1])))
         .attr("width", d => barxScale(d[0]))
         .attr("fill",d=>color[d[2]])
+        .attr("stroke","black")
         
         
         d3.select(sPlot.current).append("g")
