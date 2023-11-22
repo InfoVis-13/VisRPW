@@ -1,187 +1,107 @@
 import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
-
-import DataContext from './DataContext.js';
+import Typography from '@mui/material/Typography';
 
 const GraphPlot = (props) => {
+
+    const data = props.data;
+    const width = props.width/2-props.margin;
+    const height = props.height;
+    const margin = props.margin;
     
-    const dataContext = React.useContext(DataContext);
+    const numDevPlot = useRef(null);
+    const tputPlot = useRef(null);  
+
+    useEffect(() => {
+        
+        const numDevSvg = d3.select(numDevPlot.current);
+        const tputSvg = d3.select(tputPlot.current);
+
+        const timeGap = data[1].time-data[0].time;
+        let xScale = d3.scaleLinear()
+                        .domain([
+                            d3.min(data, d => d.time),
+                            d3.max(data, d => d.time)+timeGap
+                        ])
+                        .range([0, width]);
     
-    const sPlot = useRef(null);  
+        let yScale = d3.scaleLinear()
+                      .domain([
+                          0,
+                          d3.max(data, d => d.number)
+                      ])
+                      .range([height, 0]);
+        let xAxis = d3.axisBottom().scale(xScale);
+        let yAxis = d3.axisLeft()
+                        .scale(yScale)
+                        .ticks(5);
+                      
+        numDevSvg.append("g")
+            .attr("transform", `translate(${margin}, ${margin})`)
+            .selectAll("rect")
+            .data(data)
+            .join("rect")
+            .attr("x", d => xScale(d.time))
+            .attr("y", d => yScale(d.number))
+            .attr("width", xScale(data[1].time)-xScale(data[0].time))
+            .attr("height", d => yScale(0)-yScale(d.number))
+            .attr("fill", "steelblue")
+            .attr("stroke", "steelblue");
 
-    useEffect(() => {  
-        /*console.log("graph plot")
-        d3.select(sPlot.current)
-        .selectAll('rect')     
-        .data([1234])
-        .enter()
-        .append('rect')  
-        .attr("x", 0)
-        .attr("y", 0)
-        .attr("height", props.height)
-        .attr("width", props.width)
-        .attr("fill",'green')
-
-        d3.select(sPlot.current)
-        .selectAll('text')     
-        .data([123])
-        .enter()
-        .append('text')  
-        .attr("x", 20)
-	    .attr("y", 20)
-        .text("Graph Plot") */
-
-        if(props.apdata == undefined) return
-        
-        let margin = 25;      
-        let throuputwidth = props.width/2;
-        let throuputX = props.width/2;
-
-        const criteria = [25.0, 15.0, 10.0, 5.0];
-        const labels = ["veryPoor", "poor", "normal", "good", "veryGood"];
-        const color = ["#FF0000", "#FF8000", "#FFFF00", "#80FF00", "#00FF00"];
-
-        const X = d3.map(props.apdata, d => d["time"]);
-        const BarY = d3.map(props.apdata, d => parseInt(d["number"]));
-        var arrBar = [];
-        let temp = BarY[0];
-        let amount = 1;
-        for(let i = 1; i < X.length; i++)
-        {            
-            if(temp == BarY[i])
-            {
-                amount++;
-            }
-            else{
-                let colorj = criteria.length;
-                for(let j = 0; j < criteria.length; j++)
-                {
-                    if(temp > criteria[j])
-                    {
-                        colorj = j;
-                        break;
-                    }
-                }
-                arrBar.push([amount, temp, colorj]);
-                temp = BarY[i];
-                amount = 1;
-            }        
-        }
-        let colorj = criteria.length;
-        for(let j = 0; j < criteria.length; j++)
-        {
-            if(temp > criteria[j])
-            {
-                colorj = j;
-                break;
-            }
-        }
-        arrBar.push([amount, temp, colorj]);
-
-        console.log("Xlen : " + X.length + " width : " + throuputwidth);
-        console.log(arrBar)
-
-        let barxDomain = [0, X.length];
-        let baryDomain = [0, d3.max(BarY)];
-
-        const barxScale = d3.scaleLinear(barxDomain, [0, throuputwidth-2*margin]);
-        const baryScale = d3.scaleLinear(baryDomain, [props.height-margin, margin]);
-        const barxAxis = d3.axisBottom(barxScale);
-        const baryAxis = d3.axisLeft(baryScale);
-
-        let accX = margin;
-        d3.select(sPlot.current)
-        .selectAll('rect')
-        .data(arrBar)
-        .enter()
-        .append('rect')  
-        .attr("x", d => { 
-            let curX = parseInt(accX);
-            accX += barxScale(d[0])
-            console.log("curX : " + curX + " next X : " + accX)
-            return curX;
-        })
-        .attr("y", d => baryScale(d[1]))
-        .attr("height", d => baryScale(0)-(baryScale(d[1])))
-        .attr("width", d => barxScale(d[0]))
-        .attr("fill","skyblue")
-
-        .attr("stroke","black")
-
-        d3.select(sPlot.current)
-        .selectAll(".text")
-        .data(["The number of devices"])
-        .join("text")
-        .attr("x",35)
-        .attr("y",20)
-        .attr("font-size", 14)
-        .text(d=>d)
-        
-        d3.select(sPlot.current).append("g")
-        .attr("transform", `translate(${margin},${props.height-margin})`)
-        .call(barxAxis);
-  
-        d3.select(sPlot.current).append("g")
-        .attr("transform", `translate(${margin},0)`)
-        .call(baryAxis)
-        
-        const Y = d3.map(props.apdata, d => d["total throughput"]);
-        const I = d3.range(X.length);
-        let defined = (d, i) => !isNaN(X[i]) && !isNaN(Y[i]);
-        const D = d3.map(props.apdata, defined);
-
-        const YMargin = 50;
-        // Compute default domains.   
-        let xDomain = [d3.min(X), d3.max(X)];     
-        let yDomain = [0, d3.max(Y)+YMargin];
-
-        // Construct scales and axes.
-        const xScale = d3.scaleLinear(xDomain, [throuputX+margin, props.width-margin]);
-        const yScale = d3.scaleLinear(yDomain, [props.height-margin, margin]);
-        const xAxis = d3.axisBottom(xScale).ticks(throuputwidth / 80).tickSizeOuter(0);
-        const yAxis = d3.axisLeft(yScale).ticks(props.height / 40);
-
-        console.log(X);
-        console.log(Y);
-        console.log(I);
-        console.log(D);
-
-        let curve = d3.curveLinear;
-
-        const line = d3.line()
-            .defined(i => D[i])
-            .curve(curve)
-            .x(i => xScale(X[i]))
-            .y(i => yScale(Y[i]));
-
-            d3.select(sPlot.current).append("path")
-            .attr("fill", "none")
-            .attr("stroke", "black")
-            .attr("d", line(I));
-
-            d3.select(sPlot.current)
-            .selectAll(".text")
-            .data(["Total throughput"])
-            .join("text")
-            .attr("x",props.width/2+35)
-            .attr("y",20)
-            .attr("font-size", 14)
-            .text(d=>d)
-
-            d3.select(sPlot.current).append("g")
-            .attr("transform", `translate(${0},${props.height-margin})`)
+        numDevSvg.append("g")
+            .attr("transform", `translate(${margin}, ${height + margin})`)
             .call(xAxis);
-      
-            d3.select(sPlot.current).append("g")
-            .attr("transform", `translate(${throuputX+margin},0)`)
-            .call(yAxis)
+        
+        numDevSvg.append("g")
+            .attr("transform", `translate(${margin}, ${margin})`)
+            .call(yAxis);
 
+        let tputYScale = d3.scaleLinear()
+                        .domain([
+                            0,
+                            d3.max(data, d => d["total throughput"])+30
+                        ])
+                        .range([height, 0]);
+
+        let tputYAxis = d3.axisLeft()
+                        .scale(tputYScale)
+                        .ticks(5);
+        
+        const line = d3.line()
+                        .x(d => xScale(d.time))
+                        .y(d => tputYScale(d["total throughput"]))
+                        .curve(d3.curveLinear);
+        
+        tputSvg.append("g")
+            .attr("transform", `translate(${margin}, ${height + margin})`)
+            .call(xAxis);
+        
+        tputSvg.append("g")
+            .attr("transform", `translate(${margin}, ${margin})`)
+            .call(tputYAxis);
+
+        tputSvg.append("path")
+            .attr("transform", `translate(${margin}, ${margin})`)
+            .attr("stroke", "black")
+            .attr("fill", "none")
+            .attr("d", line(data));
+        
     }, []);
 
 	return (
-    <div style={{border: '1px solid', borderRadius: 8, padding: 2}}>
-        <svg ref={sPlot} width={props.width} height={props.height}> 
-		</svg>       
+    <div style={{display:"flex", border:"2px solid lightgray", borderRadius: 8, padding: 2, backgroundColor:"whitesmoke"}}>
+        <div style={{marginLeft: 5}}>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, fontSize: 18 }}>
+                The number of Devices
+            </Typography>
+            <svg ref={numDevPlot} width={width+2*margin} height={height+2*margin}/>
+        </div>
+        <div style={{marginLeft: margin-5}}>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, fontSize: 18 }}>
+                Total Throughput
+            </Typography>
+            <svg ref={tputPlot} width={width+2*margin} height={height+2*margin}/>        
+        </div>
     </div>
     )
 
