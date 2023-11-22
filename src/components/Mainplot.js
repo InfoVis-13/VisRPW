@@ -1,8 +1,11 @@
 import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
+import Box from '@mui/material/Box';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
 
-import GraphPlot from './GraphPlot.js'
-import DataContext from './DataContext.js';
+import GraphPlot from './GraphPlot.js';
 import SummaryAP from "./SummaryAP.js";
 import SummaryDev from "./SummaryDev.js";
 import ControlPanel from "./ControlPanel.js";
@@ -10,23 +13,23 @@ import TotalSummary from "./TotalSummary.js";
 
 import apdata from "../data/ap1_dummy.json";
 
-const margin = 20;
+const margin = 30;
 const graphWidth = 1040;
 const graphHeight = 200;
-const mainWidth = 510;
-const mainHeight = 510;
+const mainWidth = 590;
+const mainHeight = 590;
 const APWidth = 200;
-const APHeight = 270;
+const APHeight = 320;
 const ControlWidth = 250;
-const ControlHeight = 510;
+const ControlHeight = 590;
 
 const Mainplot = (props) => {
  
   const data = apdata.map(d => ({
     ...d, 
-    time: parseFloat(d.time),
-    section: parseInt(d.section), 
-    number: parseInt(d.number)
+    "time": parseFloat(d.time),
+    "section": parseInt(d.section), 
+    "number": parseInt(d.number)
   }));
   console.log(data);
  
@@ -39,6 +42,7 @@ const Mainplot = (props) => {
   useEffect(() => {
      
       const mainSvg = d3.select(smainPlot.current);
+      const timeGap = data[1].time-data[0].time;
 
       const statsData = data.map(d => {
           let eachData = {
@@ -68,7 +72,7 @@ const Mainplot = (props) => {
       let xScale = d3.scaleLinear()
                         .domain([
                             d3.min(data, d => d.time),
-                            d3.max(data, d => d.time)
+                            d3.max(data, d => d.time)+timeGap
                         ])
                         .range([0, mainWidth]);
     
@@ -79,77 +83,9 @@ const Mainplot = (props) => {
                       ])
                       .range([mainHeight, 0]);
       
-      let colorScale = d3.scaleOrdinal(d3.schemeCategory10);
-      
       let xAxis = d3.axisBottom().scale(xScale);
       let yAxis = d3.axisLeft().scale(yScale);
-      
-      mainSvg.append("g")
-      .attr("transform", `translate(${margin}, ${mainHeight + margin})`)
-      .attr("id", "x-axis")
-      .call(xAxis);
-  
-      mainSvg.append("g")
-          .attr("transform", `translate(${margin}, ${margin})`)
-          .attr("id", "y-axis")
-          .call(yAxis);
-      
-      // mainSvg.append("g")
-      //     .attr("transform", `translate(${margin}, ${margin})`)
-      //     .selectAll("circle")
-      //     .data(data)
-      //     .join("circle")
-      //     .attr("cx", d => xScale(d.time))
-      //     .attr("cy", d => yScale(d.number))
-      //     .attr("r", 2)
-      //     .attr("fill", "steelblue");
-      
-      // for(let i=0; i<labels.length; i++) {
-      //     mainSvg.append("g")
-      //     .attr("transform", `translate(${margin}, ${margin})`)
-      //     .selectAll("circle")
-      //     .data(statsData)
-      //     .join("circle")
-      //     .attr("cx", d => xScale(d.time))
-      //     .attr("cy", d => yScale(d[labels[i]]))
-      //     .attr("r", 2)
-      //     .attr("fill", colorScale(i));
-      // }
-                           
-      // const area = d3.area()
-      //               .x0((d, i) => xScale(d.time))
-      //               .x1((d, i) => xScale(d.time))
-      //               .y0(yScale(0))
-      //               .y1(d => yScale(d.number))
-      //               .curve(d3.curveLinear);
-      
-      // mainSvg.append("path")
-      //   .attr("transform", `translate(${margin}, ${margin})`)
-      //   .attr("fill", "steelblue")
-      //   .attr("stroke", "steelblue")
-      //   .attr("stroke-width", 1.5)
-      //   .attr("d", area(data));
-      
-      // for(let labIdx=labels.length-1; labIdx>=0; labIdx--) {
-      //   const plotData = statsData.map(d => {
-      //     let cumulativeVal = 0;
-      //     for(let j=labIdx; j>=0; j--) {
-      //       cumulativeVal += d[labels[j]];
-      //     }
-      //     return {
-      //       "time": d.time,
-      //       "number": cumulativeVal
-      //     };
-      //   });
-      //   console.log(plotData);
-      //   mainSvg.append("path")
-      //   .attr("transform", `translate(${margin}, ${margin})`)
-      //   .attr("fill", colorScale(labIdx))
-      //   .attr("stroke", colorScale(labIdx))
-      //   // .attr("stroke-width", 1.5)
-      //   .attr("d", area(plotData));
-      // }
-
+    
       for(let labIdx=labels.length-1; labIdx>=0; labIdx--) {
         const plotData = statsData.map(d => {
           let cumulativeVal = 0;
@@ -175,22 +111,56 @@ const Mainplot = (props) => {
         .attr("fill", color[labIdx]);
       }
 
+      mainSvg.append("g")
+      .attr("transform", `translate(${margin}, ${mainHeight + margin})`)
+      .attr("id", "x-axis")
+      .call(xAxis);
+  
+      mainSvg.append("g")
+          .attr("transform", `translate(${margin}, ${margin})`)
+          .attr("id", "y-axis")
+          .call(yAxis);
 
       
 	}, []);
  
 	return (
 		<div>
-      <h1>VisRPW</h1>
-      <div style={{marginLeft: margin, marginTop: margin, width:graphWidth, height: graphHeight}}>
-        <GraphPlot apdata={apdata} width={graphWidth} height={graphHeight}/>
+      <Box sx={{ flexGrow: 1, marginBottom: 5 }}>
+      <AppBar position="static" sx={{width: "100%", backgroundColor: "#003458"}}>
+        <Toolbar>
+          {/* <IconButton
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            sx={{ mr: 2 }}
+          >
+            <MenuIcon />
+          </IconButton> */}
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            VisRPW
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      </Box>
+      <div style={{marginLeft: margin, marginTop: margin, width:graphWidth+4*margin, height: graphHeight+2*margin+50}}>
+        <GraphPlot data={data} width={graphWidth} height={graphHeight} margin={margin}/>
       </div> 
       <div style={{ display:"flex"}}>
         <div style={{marginLeft: margin, marginTop: margin, width:APWidth, height: APHeight*2}}>
             <SummaryAP width={APWidth} height={APHeight}/>
             <SummaryDev apdata={data} width={APWidth} height={APHeight}/>
         </div>
-        <div style={{marginLeft: (margin), marginTop: margin, width:mainWidth+2*margin, height: mainHeight+2*margin}}>
+        <div style={{
+            marginLeft: (margin), 
+            marginTop: margin, 
+            width:mainWidth+2*margin, 
+            height: mainHeight+2*margin,  
+            backgroundColor:"whitesmoke",
+            border:"2px solid lightgray",
+            borderRadius: 8,
+          }}>
           <svg ref={smainPlot} width={mainWidth+2*margin} height={mainHeight+2*margin}> 
           </svg>      
         </div>
@@ -198,8 +168,8 @@ const Mainplot = (props) => {
             <ControlPanel width={ControlWidth} height={ControlHeight} margin={margin}/>
         </div>
       </div>
-      <div style={{marginLeft: margin, marginTop: margin, width:graphWidth, height: graphHeight}}>
-        <TotalSummary width={graphWidth} height={50}/>
+      <div style={{marginLeft: margin, marginTop: margin, width:graphWidth+4*margin, height: graphHeight}}>
+        <TotalSummary width={graphWidth+4*margin} height={50} margin={margin}/>
       </div> 
 		</div>
 	)

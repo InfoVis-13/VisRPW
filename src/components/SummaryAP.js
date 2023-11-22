@@ -79,7 +79,7 @@ const SummaryAP = (props) => {
     }, []);
 
 	return (
-    <div style={{border: '1px solid', borderRadius: 8}}>
+    <div style={{border:"2px solid lightgray", width: props.width, height: props.height, borderRadius: 8, backgroundColor:"white"}}>
         <Accordion sx={{ boxShadow:"none" }} defaultExpanded={true}>
             <StyledAccordionSummary
                 expandIcon={<ExpandMoreIcon />}

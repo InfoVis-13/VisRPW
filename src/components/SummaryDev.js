@@ -114,7 +114,7 @@ const SummaryDev = (props) => {
     }, []);
 
 	return (
-    <div style={{marginTop: 9.5, width: props.width, height: props.height, border: '1px solid', borderRadius: 8}}>
+    <div style={{marginTop: 9.5, width: props.width, height: props.height, borderRadius: 8, border:"2px solid lightgray", backgroundColor:"white"}}>
         <Accordion sx={{ boxShadow:"none" }} defaultExpanded={true}>
             <StyledAccordionSummary
                 expandIcon={<ExpandMoreIcon />}
