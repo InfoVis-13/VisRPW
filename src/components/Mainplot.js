@@ -1,8 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
-import Box from '@mui/material/Box';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
+import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 
 import GraphPlot from './GraphPlot.js';
@@ -10,20 +8,23 @@ import SummaryAP from "./SummaryAP.js";
 import SummaryDev from "./SummaryDev.js";
 import ControlPanel from "./ControlPanel.js";
 import TotalSummary from "./TotalSummary.js";
+import { componentStyles } from "../common/StyledComponents.js";
 
 import apdata from "../data/ap1_dummy.json";
 
-const margin = 30;
-const graphWidth = 1040;
-const graphHeight = 200;
-const mainWidth = 590;
-const mainHeight = 590;
-const APWidth = 200;
-const APHeight = 320;
-const ControlWidth = 250;
-const ControlHeight = 590;
-
 const Mainplot = (props) => {
+
+  const plotMargin = 30;
+  const graphWidth = window.innerWidth*0.92;
+  const graphHeight = window.innerHeight*0.3;
+  const mainWidth = (window.innerWidth*0.92)*0.66;
+  const mainHeight = window.innerHeight*0.9;
+  const APWidth = (window.innerWidth*0.92)*0.32;
+  const APHeight = (mainHeight-2*plotMargin)/2;
+  const ControlWidth = APWidth;
+  const ControlHeight = mainHeight;
+  const padding = 10;
+  const titleHeight = 35;
  
   const data = apdata.map(d => ({
     ...d, 
@@ -33,7 +34,9 @@ const Mainplot = (props) => {
   }));
   console.log(data);
  
-  const smainPlot = useRef(null);      
+  const smainPlot = useRef(null);   
+  const plotWidth = mainWidth-2*plotMargin-2*padding;
+  const plotHeight = mainHeight-titleHeight-2*plotMargin-2*padding;   
 
   const criteria = [1.0, 5.0, 15.0, 25.0];
   const labels = ["veryPoor", "poor", "normal", "good", "veryGood"];
@@ -74,14 +77,14 @@ const Mainplot = (props) => {
                             d3.min(data, d => d.time),
                             d3.max(data, d => d.time)+timeGap
                         ])
-                        .range([0, mainWidth]);
+                        .range([0, plotWidth]);
     
       let yScale = d3.scaleLinear()
                       .domain([
                           0,
                           d3.max(data, d => d.number)
                       ])
-                      .range([mainHeight, 0]);
+                      .range([plotHeight, 0]);
       
       let xAxis = d3.axisBottom().scale(xScale);
       let yAxis = d3.axisLeft().scale(yScale);
@@ -99,7 +102,7 @@ const Mainplot = (props) => {
         });
         console.log(plotData);
         mainSvg.append("g")
-        .attr("transform", `translate(${margin}, ${margin})`)
+        .attr("transform", `translate(${plotMargin}, ${plotMargin})`)
         .selectAll("rect")
         .data(plotData)
         .join("rect")
@@ -112,12 +115,12 @@ const Mainplot = (props) => {
       }
 
       mainSvg.append("g")
-      .attr("transform", `translate(${margin}, ${mainHeight + margin})`)
+      .attr("transform", `translate(${plotMargin}, ${plotHeight + plotMargin})`)
       .attr("id", "x-axis")
       .call(xAxis);
   
       mainSvg.append("g")
-          .attr("transform", `translate(${margin}, ${margin})`)
+          .attr("transform", `translate(${plotMargin}, ${plotMargin})`)
           .attr("id", "y-axis")
           .call(yAxis);
 
@@ -125,53 +128,27 @@ const Mainplot = (props) => {
 	}, []);
  
 	return (
-		<div>
-      <Box sx={{ flexGrow: 1, marginBottom: 5 }}>
-      <AppBar position="static" sx={{width: "100%", backgroundColor: "#003458"}}>
-        <Toolbar>
-          {/* <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton> */}
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            VisRPW
-          </Typography>
-        </Toolbar>
-      </AppBar>
-      </Box>
-      <div style={{marginLeft: margin, marginTop: margin, width:graphWidth+4*margin, height: graphHeight+2*margin+50}}>
-        <GraphPlot data={data} width={graphWidth} height={graphHeight} margin={margin}/>
-      </div> 
-      <div style={{ display:"flex"}}>
-        <div style={{marginLeft: margin, marginTop: margin, width:APWidth, height: APHeight*2}}>
-            <SummaryAP width={APWidth} height={APHeight}/>
-            <SummaryDev apdata={data} width={APWidth} height={APHeight}/>
-        </div>
-        <div style={{
-            marginLeft: (margin), 
-            marginTop: margin, 
-            width:mainWidth+2*margin, 
-            height: mainHeight+2*margin,  
-            backgroundColor:"whitesmoke",
-            border:"2px solid lightgray",
-            borderRadius: 8,
-          }}>
-          <svg ref={smainPlot} width={mainWidth+2*margin} height={mainHeight+2*margin}> 
-          </svg>      
-        </div>
-        <div style={{marginLeft: margin, marginTop: margin, width:ControlWidth, height: ControlHeight+2*margin}}>
-            <ControlPanel width={ControlWidth} height={ControlHeight} margin={margin}/>
-        </div>
-      </div>
-      <div style={{marginLeft: margin, marginTop: margin, width:graphWidth+4*margin, height: graphHeight}}>
-        <TotalSummary width={graphWidth+4*margin} height={50} margin={margin}/>
-      </div> 
-		</div>
+		<Grid container sx={{width: "100%", p: "4%"}}>
+      <Grid item xs={12} sx={componentStyles}>
+        <GraphPlot data={data} width={graphWidth} height={graphHeight} margin={plotMargin} titleHeight={titleHeight}/>
+      </Grid>
+      <Grid item xs={2} sx={{ display:"flex", flexDirection:"column", pr: "1%"}}>
+        <SummaryAP width={APWidth} height={APHeight} margin={plotMargin} padding={padding}/>
+        <SummaryDev apdata={data} width={APWidth} height={APHeight} margin={plotMargin} padding={padding}/>
+      </Grid>
+      <Grid item xs={8} sx={{ ...componentStyles, height: mainHeight, p: `${padding}px`}}>
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, fontSize: 20, fontWeight: "bold", maxHeight: titleHeight }}>
+          The number of Devices
+        </Typography>
+        <svg ref={smainPlot} width={mainWidth} height={mainHeight}/> 
+      </Grid>
+      <Grid item xs={2} sx={{pl: "1%", height: mainHeight}}>
+        <ControlPanel width={ControlWidth} height={ControlHeight} margin={plotMargin} padding={padding}/>
+      </Grid>
+      <Grid item xs={12} sx={componentStyles}>
+        <TotalSummary width={graphWidth} height={50} margin={plotMargin}/>
+      </Grid>
+		</Grid>
 	)
 };
 export default Mainplot;

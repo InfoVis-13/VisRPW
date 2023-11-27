@@ -1,49 +1,15 @@
 import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 
-import DataContext from './DataContext.js';
-
 import config from '../data/config.json';
-import withStyles from '@mui/styles/withStyles';
 import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
-import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-
-const StyledAccordionSummary = withStyles({
-    fontWeight: "bold",
-    root: {
-        minHeight: 30,
-        maxHeight: 30,
-        marginTop: 5,
-        '&.Mui-expanded': {
-          minHeight: 30,
-          maxHeight: 30,
-        }
-    },
-    content: {
-        margin: 0,
-        '&.Mui-expanded': {
-          margin: 0
-        }
-    },
-    expandIcon: {
-        order: -1
-    }
-    })(AccordionSummary);
-
-const StyledTypography = withStyles({
-    root: {
-        fontSize: 16,
-        fontWeight: "bold",
-    }
-})(Typography);
+import { StyledTypography, StyledAccordionSummary, componentStyles } from "../common/StyledComponents.js";
 
 const SummaryAP = (props) => {
     
-    const dataContext = React.useContext(DataContext);
-    
+    const padding = props.padding;
     const sPlot = useRef(null);  
 
     useEffect(() => {       
@@ -73,13 +39,13 @@ const SummaryAP = (props) => {
         .attr("x",20)
         .attr("y",(d,i)=>{textheight += 20; return textheight;})
         .text((d,i)=>d)
-        .attr("font-size", 15)
+        .attr("font-size", 18)
         //.style("font-size", "10px")
 
     }, []);
 
 	return (
-    <div style={{border:"2px solid lightgray", width: props.width, height: props.height, borderRadius: 8, backgroundColor:"white"}}>
+    <div style={{ ...componentStyles, height: props.height, borderRadius: 10, padding:`${padding}px`}}>
         <Accordion sx={{ boxShadow:"none" }} defaultExpanded={true}>
             <StyledAccordionSummary
                 expandIcon={<ExpandMoreIcon />}
