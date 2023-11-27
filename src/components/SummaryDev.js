@@ -1,46 +1,16 @@
 import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
-import withStyles from '@mui/styles/withStyles';
 import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
-import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-
-const StyledAccordionSummary = withStyles({
-    fontWeight: "bold",
-    root: {
-        minHeight: 30,
-        maxHeight: 30,
-        marginTop: 5,
-        '&.Mui-expanded': {
-          minHeight: 30,
-          maxHeight: 30,
-        }
-    },
-    content: {
-        margin: 0,
-        '&.Mui-expanded': {
-          margin: 0
-        }
-    },
-    expandIcon: {
-        order: -1
-    }
-    })(AccordionSummary);
-
-const StyledTypography = withStyles({
-    root: {
-        fontSize: 16,
-        fontWeight: "bold",
-    }
-})(Typography);
+import { StyledAccordionSummary, StyledTypography, componentStyles } from "../common/StyledComponents";
 
 const SummaryDev = (props) => {
     
     const apData = props.apdata;
     const sPlot = useRef(null);
     
+    const padding = props.padding;
     const criteria = [1.0, 5.0, 15.0, 25.0];
     const labels = ["veryPoor", "poor", "normal", "good", "veryGood"];
     const color = ["#FF0000", "#FF8000", "#FFD400", "#80FF00", "#009000"];
@@ -108,13 +78,13 @@ const SummaryDev = (props) => {
             .join('text')
             .attr("x",35)
             .attr("y",(d,i)=>20*(i+1)+1)
-            .attr("font-size", 15)
+            .attr("font-size", 18)
             .text((d,i)=>`${d.name} - ${d.count} (${d.ratio}%)`);
 
     }, []);
 
 	return (
-    <div style={{marginTop: 9.5, width: props.width, height: props.height, borderRadius: 8, border:"2px solid lightgray", backgroundColor:"white"}}>
+    <div style={{ ...componentStyles, height: props.height, marginTop: 9.5, borderRadius: 10, padding:`${padding}px`}}>
         <Accordion sx={{ boxShadow:"none" }} defaultExpanded={true}>
             <StyledAccordionSummary
                 expandIcon={<ExpandMoreIcon />}
