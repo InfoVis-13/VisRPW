@@ -48,8 +48,8 @@ const GraphPlot = (props) => {
 
             console.log(selection)
             d3.select(".brushRight")
-                .attr("brushed","false")
-                .call(brushRight.move,selection)
+                .attr("id","ss2")
+                .call(brushRight.move,[x0,x1])
         }
         leftbrushdoing = false;
     }
@@ -65,6 +65,7 @@ const GraphPlot = (props) => {
             //let datax1 = reverseXscale(x1)
             console.log(selection)
             d3.select(".brushLeft")
+                .attr("id","aa1")
                 .call(brushLeft.move,[x0,x1])
         }
     }
@@ -155,13 +156,13 @@ const GraphPlot = (props) => {
             .attr("d", line(data));
 
         d3.select(numDevPlot.current).append('g')
-        .attr('class', 'brush')
+        .attr('class', 'brushLeft')
         .attr('transform', `translate(${margin},${margin})`)
         .attr("id", "brushLeft")
         .call(brushLeft)
 
         d3.select(tputPlot.current).append('g')
-        .attr('class', 'brush')
+        .attr('class', 'brushRight')
         .attr('transform', `translate(${margin},${margin})`)
         .attr("id", "brushRight")
         .call(brushRight)
