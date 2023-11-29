@@ -11,8 +11,10 @@ import TotalSummary from "./TotalSummary.js";
 import { componentStyles } from "../common/StyledComponents.js";
 
 import apdata from "../data/ap1_dummy.json";
+import DataContext from './DataContext.js';
 
 const Mainplot = (props) => {
+  const dataContext = React.useContext(DataContext);
 
   const plotMargin = 30;
   const graphWidth = window.innerWidth*0.92;
@@ -35,6 +37,8 @@ const Mainplot = (props) => {
   console.log(data);
  
   const smainPlot = useRef(null);   
+  const [timethreshold, settimeshow] = useState([-1,999999]);
+  dataContext.setTimeShow = settimeshow;
   const plotWidth = mainWidth-2*plotMargin-2*padding;
   const plotHeight = mainHeight-titleHeight-2*plotMargin-2*padding;   
 
@@ -69,26 +73,25 @@ const Mainplot = (props) => {
               if (cnt === d.number) break;
           }
           return eachData;
-      });
+      }).filter(d => ((d.time >= timethreshold[0]) && (d.time <= timethreshold[1])));
       console.log(statsData);
-      
+
       let xScale = d3.scaleLinear()
-                        .domain([
-                            d3.min(data, d => d.time),
-                            d3.max(data, d => d.time)+timeGap
-                        ])
-                        .range([0, plotWidth]);
-    
+      .domain([
+          d3.min(statsData, d => d.time),
+          d3.max(statsData, d => d.time)+timeGap
+      ])
+      .range([0, plotWidth]);
+
       let yScale = d3.scaleLinear()
-                      .domain([
-                          0,
-                          d3.max(data, d => d.number)
-                      ])
-                      .range([plotHeight, 0]);
+      .domain([
+        0,
+        d3.max(statsData, d => d.number)
+      ])
+      .range([plotHeight, 0]);
       
-      let xAxis = d3.axisBottom().scale(xScale);
-      let yAxis = d3.axisLeft().scale(yScale);
-    
+      mainSvg.selectAll(".mainrect").remove()
+
       for(let labIdx=labels.length-1; labIdx>=0; labIdx--) {
         const plotData = statsData.map(d => {
           let cumulativeVal = 0;
@@ -100,12 +103,14 @@ const Mainplot = (props) => {
             "number": cumulativeVal
           };
         });
+
         console.log(plotData);
         mainSvg.append("g")
         .attr("transform", `translate(${plotMargin}, ${plotMargin})`)
         .selectAll("rect")
         .data(plotData)
         .join("rect")
+        .attr("class","mainrect")
         .attr("x", d => xScale(d.time))
         .attr("y", d => yScale(d.number))
         .attr("width", xScale(plotData[1].time)-xScale(plotData[0].time))
@@ -114,18 +119,24 @@ const Mainplot = (props) => {
         .attr("fill", color[labIdx]);
       }
 
+      let xAxis = d3.axisBottom().scale(xScale);
+      let yAxis = d3.axisLeft().scale(yScale);
+    
+      mainSvg.select(".x-axis").remove()
+      mainSvg.select(".y-axis").remove()
+
       mainSvg.append("g")
       .attr("transform", `translate(${plotMargin}, ${plotHeight + plotMargin})`)
-      .attr("id", "x-axis")
+      .attr("class", "x-axis")
       .call(xAxis);
   
       mainSvg.append("g")
           .attr("transform", `translate(${plotMargin}, ${plotMargin})`)
-          .attr("id", "y-axis")
+          .attr("class", "y-axis")
           .call(yAxis);
 
       
-	}, []);
+	}, [timethreshold]);
  
 	return (
 		<Grid container sx={{width: "100%", p: "4%"}}>

@@ -1,8 +1,11 @@
 import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 import Typography from '@mui/material/Typography';
+import DataContext from './DataContext.js';
 
 const GraphPlot = (props) => {
+
+    const dataContext = React.useContext(DataContext);
 
     const data = props.data;
     const margin = props.margin;
@@ -43,31 +46,39 @@ const GraphPlot = (props) => {
         }
         else {
             let [x0, x1] = selection;
-            //let datax0 = reverseXscale(x0)
-            //let datax1 = reverseXscale(x1)
+            let datax0 = reverseXscale(x0)
+            let datax1 = reverseXscale(x1)
 
-            console.log(selection)
             d3.select(".brushRight")
-                .attr("id","ss2")
                 .call(brushRight.move,[x0,x1])
+
+            if(datax1 - datax0 > 1)
+            {
+            dataContext.setTimeShow([datax0,datax1]) 
+            }
         }
         leftbrushdoing = false;
     }
 
     function brushedRight({selection}) {
+        if (rightbrushdoing == true)
+            return;
+        rightbrushdoing = true;
         if (selection === null) {
           // init
         }
         else {
-            console.log(selection)
             let [x0, x1] = selection;
-            //let datax0 = reverseXscale(x0)
-            //let datax1 = reverseXscale(x1)
-            console.log(selection)
+            let datax0 = reverseXscale(x0)
+            let datax1 = reverseXscale(x1)
             d3.select(".brushLeft")
-                .attr("id","aa1")
                 .call(brushLeft.move,[x0,x1])
+
+            if(datax1 - datax0 > 1){
+                dataContext.setTimeShow([datax0,datax1])
+            }
         }
+        rightbrushdoing = false;
     }
 
     useEffect(() => {
