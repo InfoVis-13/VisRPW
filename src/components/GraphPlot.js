@@ -3,6 +3,8 @@ import * as d3 from "d3";
 import Typography from '@mui/material/Typography';
 import DataContext from './DataContext.js';
 
+import { StyledTypography } from "../common/StyledComponents.js";
+
 const GraphPlot = (props) => {
 
     const dataContext = React.useContext(DataContext);
@@ -183,15 +185,15 @@ const GraphPlot = (props) => {
 	return (
     <div style={{display:"flex"}}>
         <div style={{padding: padding}}>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, fontSize: 20, fontWeight: "bold", maxHeight: titleHeight }}>
+            <StyledTypography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, fontSize: 20, fontWeight: "bold", maxHeight: titleHeight }}>
                 The number of Devices
-            </Typography>
+            </StyledTypography>
             <svg ref={numDevPlot} width={width} height={height}/>
         </div>
         <div style={{padding: padding}}>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, fontSize: 20, fontWeight: "bold", maxHeight: titleHeight }}>
+            <StyledTypography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, fontSize: 20, fontWeight: "bold", maxHeight: titleHeight }}>
                 Total Throughput
-            </Typography>
+            </StyledTypography>
             <svg ref={tputPlot} width={width} height={height}/>
         </div>
     </div>

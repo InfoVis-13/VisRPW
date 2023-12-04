@@ -1,14 +1,13 @@
 import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
 
 import GraphPlot from './GraphPlot.js';
 import SummaryAP from "./SummaryAP.js";
 import SummaryDev from "./SummaryDev.js";
 import ControlPanel from "./ControlPanel.js";
 import TotalSummary from "./TotalSummary.js";
-import { componentStyles } from "../common/StyledComponents.js";
+import { componentStyles, StyledTypography } from "../common/StyledComponents.js";
 
 import apdata from "../data/ap1_dummy.json";
 import DataContext from './DataContext.js';
@@ -28,12 +27,28 @@ const Mainplot = (props) => {
   const padding = 10;
   const titleHeight = 35;
  
-  const data = apdata.map(d => ({
-    ...d, 
-    "time": parseFloat(d.time),
-    "section": parseInt(d.section), 
-    "number": parseInt(d.number)
-  }));
+  const data = apdata.map(d => {
+    const number = parseInt(d.number);
+    let sum = 0;
+    let squareSum = 0;
+    let cnt = 0;
+    for (let i=1; ;i++) {
+      if (d[`sta${i}`] === -1.0) continue;
+      // console.log(d[`sta${i}`]);
+      d[`sta${i}`] = parseFloat(d[`sta${i}`]);
+      sum += d[`sta${i}`];
+      squareSum += d[`sta${i}`]*d[`sta${i}`];
+      cnt++;
+      if (cnt === number) break;
+    }
+    return{
+      ...d, 
+      "time": parseFloat(d.time),
+      "section": parseInt(d.section), 
+      "number": number,
+      "fairness": (sum*sum)/(cnt*squareSum),
+    }
+  });
   console.log(data);
  
   const smainPlot = useRef(null);   
@@ -148,9 +163,9 @@ const Mainplot = (props) => {
         <SummaryDev apdata={data} width={APWidth} height={APHeight} margin={plotMargin} padding={padding}/>
       </Grid>
       <Grid item xs={8} sx={{ ...componentStyles, height: mainHeight, p: `${padding}px`}}>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, fontSize: 20, fontWeight: "bold", maxHeight: titleHeight }}>
+        <StyledTypography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, fontSize: 20, fontWeight: "bold", maxHeight: titleHeight }}>
           The number of Devices
-        </Typography>
+        </StyledTypography>
         <svg ref={smainPlot} width={mainWidth} height={mainHeight}/> 
       </Grid>
       <Grid item xs={2} sx={{pl: "1%", height: mainHeight}}>
