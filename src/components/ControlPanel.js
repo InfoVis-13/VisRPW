@@ -3,17 +3,13 @@ import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
-import { componentStyles } from "../common/StyledComponents.js";
-
 const ControlPanel = (props) => {
-    const padding = props.padding;
-
     useEffect(() => {  
         
     }, []);
 
 	return (
-    <div style={{...componentStyles, height: props.height, borderRadius: 10, padding: `${padding}px`}}>
+    <React.Fragment>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, fontSize: 20 }}>
             Row
         </Typography>
@@ -27,7 +23,7 @@ const ControlPanel = (props) => {
             <Chip label="Total Throughput" color="primary" sx={{fontSize: 18}}/>
             <Chip label="The number of Devices" color="primary" sx={{fontSize: 18}}/>
         </Stack>
-    </div>
+    </React.Fragment>
     )
 };
 export default ControlPanel;

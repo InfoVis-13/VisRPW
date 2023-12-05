@@ -18,14 +18,15 @@ const Mainplot = (props) => {
   const plotMargin = 30;
   const graphWidth = window.innerWidth*0.92;
   const graphHeight = window.innerHeight*0.3;
-  const mainWidth = (window.innerWidth*0.92)*0.66;
+  const mainWidth = (window.innerWidth*0.92)*0.63;
   const mainHeight = window.innerHeight*0.9;
-  const APWidth = (window.innerWidth*0.92)*0.32;
+  const APWidth = (window.innerWidth*0.92)*0.16;
   const APHeight = (mainHeight-2*plotMargin)/2;
   const ControlWidth = APWidth;
   const ControlHeight = mainHeight;
   const padding = 10;
   const titleHeight = 35;
+  const interComponentMargin = (window.innerWidth*0.92)*0.015;
  
   const data = apdata.map(d => {
     const number = parseInt(d.number);
@@ -254,17 +255,17 @@ const Mainplot = (props) => {
       <Grid item xs={12} sx={componentStyles}>
         <GraphPlot data={data} width={graphWidth} height={graphHeight} margin={plotMargin} titleHeight={titleHeight}/>
       </Grid>
-      <Grid item xs={2} sx={{ display:"flex", flexDirection:"column", pr: "1%"}}>
+      <Grid item xs={2} sx={{ display:"flex", flexDirection:"column", mr: `${interComponentMargin}px`}}>
         <SummaryAP width={APWidth} height={APHeight} margin={plotMargin} padding={padding}/>
         <SummaryDev apdata={data} width={APWidth} height={APHeight} margin={plotMargin} padding={padding}/>
       </Grid>
-      <Grid item xs={8} sx={{ ...componentStyles, height: mainHeight, p: `${padding}px`}}>
+      <Grid item xs={7.6} sx={{ ...componentStyles, height: mainHeight, p: `${padding}px`}}>
         <StyledTypography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, fontSize: 20, fontWeight: "bold", maxHeight: titleHeight }}>
           The number of Devices
         </StyledTypography>
         <svg ref={smainPlot} width={mainWidth} height={mainHeight}/> 
       </Grid>
-      <Grid item xs={2} sx={{pl: "1%", height: mainHeight}}>
+      <Grid item xs={2} sx={{ ...componentStyles, ml: `${interComponentMargin}px`, height: ControlHeight, padding: `${padding}px`}}>
         <ControlPanel width={ControlWidth} height={ControlHeight} margin={plotMargin} padding={padding}/>
       </Grid>
       <Grid item xs={12} sx={componentStyles}>
@@ -275,4 +276,4 @@ const Mainplot = (props) => {
 };
 export default Mainplot;
 
-//
+//...componentStyles, height: props.height, borderRadius: 10, padding: `${padding}px`
