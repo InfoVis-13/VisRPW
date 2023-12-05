@@ -59,97 +59,193 @@ const Mainplot = (props) => {
 
   const criteria = [1.0, 5.0, 15.0, 25.0];
   const labels = ["veryPoor", "poor", "normal", "good", "veryGood"];
-  const color = ["#FF0000", "#FF8000", "#FFD400", "#80FF00", "#009000"];
+  const labelColor = ["#FF0000", "#FF8000", "#FFD400", "#80FF00", "#009000"];
   
   useEffect(() => {
-     
+    
       const mainSvg = d3.select(smainPlot.current);
       const timeGap = data[1].time-data[0].time;
 
-      const statsData = data.map(d => {
-          let eachData = {
-              "time" : d.time,
-              "number": d.number,
-              "veryGood": 0,
-              "good" : 0,
-              "normal": 0,
-              "poor" : 0,
-              "veryPoor" : 0
-          };
-          let cnt = 0;
-          for(let j=0; ; j++){
-              if (d[`sta${j+1}`] === -1.0) continue;
-              let labIdx = 0;
-              for(labIdx; labIdx<criteria.length; labIdx++){
-                  if(d[`sta${j+1}`] <= criteria[labIdx]) break;
-              }
-              eachData[labels[labIdx]]++;
-              cnt++;
-              if (cnt === d.number) break;
-          }
-          return eachData;
-      }).filter(d => ((d.time >= timethreshold[0]) && (d.time <= timethreshold[1])));
+      // const statsData = data.map(d => {
+      //     let eachData = {
+      //         "time" : d.time,
+      //         "number": d.number,
+      //         "veryGood": 0,
+      //         "good" : 0,
+      //         "normal": 0,
+      //         "poor" : 0,
+      //         "veryPoor" : 0
+      //     };
+      //     let cnt = 0;
+      //     for(let j=0; ; j++){
+      //         if (d[`sta${j+1}`] === -1.0) continue;
+      //         let labIdx = 0;
+      //         for(labIdx; labIdx<criteria.length; labIdx++){
+      //             if(d[`sta${j+1}`] <= criteria[labIdx]) break;
+      //         }
+      //         eachData[labels[labIdx]]++;
+      //         cnt++;
+      //         if (cnt === d.number) break;
+      //     }
+      //     return eachData;
+      // }).filter(d => ((d.time >= timethreshold[0]) && (d.time <= timethreshold[1])));
+      // console.log(statsData);
+
+      // let xScale = d3.scaleLinear()
+      // .domain([
+      //     d3.min(statsData, d => d.time),
+      //     d3.max(statsData, d => d.time)+timeGap
+      // ])
+      // .range([0, plotWidth]);
+
+      // let yScale = d3.scaleLinear()
+      // .domain([
+      //   0,
+      //   d3.max(statsData, d => d.number)
+      // ])
+      // .range([plotHeight, 0]);
+      
+      // mainSvg.selectAll(".mainrect").remove()
+
+      // for(let labIdx=labels.length-1; labIdx>=0; labIdx--) {
+      //   const plotData = statsData.map(d => {
+      //     let cumulativeVal = 0;
+      //     for(let j=labIdx; j>=0; j--) {
+      //       cumulativeVal += d[labels[j]];
+      //     }
+      //     return {
+      //       "time": d.time,
+      //       "number": cumulativeVal
+      //     };
+      //   });
+
+      //   console.log(plotData);
+      //   mainSvg.append("g")
+      //   .attr("transform", `translate(${plotMargin}, ${plotMargin})`)
+      //   .selectAll("rect")
+      //   .data(plotData)
+      //   .join("rect")
+      //   .attr("class","mainrect")
+      //   .attr("x", d => xScale(d.time))
+      //   .attr("y", d => yScale(d.number))
+      //   .attr("width", xScale(plotData[1].time)-xScale(plotData[0].time))
+      //   .attr("height", d => yScale(0)-yScale(d.number))
+      //   .attr("stroke", color[labIdx])
+      //   .attr("fill", color[labIdx]);
+      // }
+
+      // let xAxis = d3.axisBottom().scale(xScale);
+      // let yAxis = d3.axisLeft().scale(yScale);
+    
+      // mainSvg.select(".x-axis").remove()
+      // mainSvg.select(".y-axis").remove()
+
+
+      // mainSvg.append("g")
+      // .attr("transform", `translate(${plotMargin}, ${plotHeight + plotMargin})`)
+      // .attr("class", "x-axis")
+      // .call(xAxis);
+  
+      // mainSvg.append("g")
+      //     .attr("transform", `translate(${plotMargin}, ${plotMargin})`)
+      //     .attr("class", "y-axis")
+      //     .call(yAxis);
+
+      let statsData = [];
+
+      for(let i=0; i<data.length; i++) {
+        let d = data[i];
+        let eachData = {
+            "veryGood": 0,
+            "good" : 0,
+            "normal": 0,
+            "poor" : 0,
+            "veryPoor" : 0
+        };
+        let cnt = 0;
+        for(let j=0; ; j++){
+            if (d[`sta${j+1}`] === -1.0) continue;
+            let labIdx = 0;
+            for(labIdx; labIdx<criteria.length; labIdx++){
+                if(d[`sta${j+1}`] <= criteria[labIdx]) break;
+            }
+            eachData[labels[labIdx]]++;
+            cnt++;
+            if (cnt === d.number) break;
+        }
+        for (let j=0; j<labels.length; j++) {
+          statsData.push({
+            "time": d.time,
+            "number": d.number,
+            "label": labels[j],
+            "count": eachData[labels[j]]
+          });
+        }
+      }
+          
+      statsData.filter(d => ((d.time >= timethreshold[0]) && (d.time <= timethreshold[1])));
       console.log(statsData);
 
-      let xScale = d3.scaleLinear()
-      .domain([
-          d3.min(statsData, d => d.time),
-          d3.max(statsData, d => d.time)+timeGap
-      ])
-      .range([0, plotWidth]);
+      // Determine the series that need to be stacked.
+      const series = d3.stack()
+        .keys(d3.union(statsData.map(d => d.label))) // distinct series keys, in input order
+        .value(([, D], key) => D.get(key).count) // get value for each series key and stack
+      (d3.index(statsData, d => d.time, d => d.label)); // group by stack then series key
 
-      let yScale = d3.scaleLinear()
-      .domain([
-        0,
-        d3.max(statsData, d => d.number)
-      ])
-      .range([plotHeight, 0]);
-      
-      mainSvg.selectAll(".mainrect").remove()
+      // Prepare the scales for positional and color encodings.
+      const x = d3.scaleUtc()
+        .domain([
+              d3.min(statsData, d => d.time),
+              d3.max(statsData, d => d.time)+timeGap
+        ])
+        // .domain(d3.extent(statsData, d => d.time))
+        .range([0, plotWidth]);
 
-      for(let labIdx=labels.length-1; labIdx>=0; labIdx--) {
-        const plotData = statsData.map(d => {
-          let cumulativeVal = 0;
-          for(let j=labIdx; j>=0; j--) {
-            cumulativeVal += d[labels[j]];
-          }
-          return {
-            "time": d.time,
-            "number": cumulativeVal
-          };
-        });
+      const y = d3.scaleLinear()
+        .domain([0, d3.max(series, d => d3.max(d, d => d[1]))])
+        .rangeRound([plotHeight, 0]);
 
-        console.log(plotData);
-        mainSvg.append("g")
+      const color = d3.scaleOrdinal()
+        .domain(series.map(d => d.key))
+        .range(labelColor);
+        // .range(d3.schemeTableau10);
+
+      // Construct an area shape.
+      const area = d3.area()
+        .x(d => x(d.data[0]))
+        .y0(d => y(d[0]))
+        .y1(d => y(d[1]));
+
+      // Add the y-axis, remove the domain line, add grid lines and a label.
+      mainSvg.append("g")
         .attr("transform", `translate(${plotMargin}, ${plotMargin})`)
-        .selectAll("rect")
-        .data(plotData)
-        .join("rect")
-        .attr("class","mainrect")
-        .attr("x", d => xScale(d.time))
-        .attr("y", d => yScale(d.number))
-        .attr("width", xScale(plotData[1].time)-xScale(plotData[0].time))
-        .attr("height", d => yScale(0)-yScale(d.number))
-        .attr("stroke", color[labIdx])
-        .attr("fill", color[labIdx]);
-      }
+        .call(d3.axisLeft(y).ticks(plotHeight / 80))
+        .call(g => g.select(".domain").remove())
+        .call(g => g.selectAll(".tick line").clone()
+            .attr("x2", plotWidth)
+            .attr("stroke-opacity", 0.1));
+        // .call(g => g.append("text")
+        //     .attr("x", -plotMargin)
+        //     .attr("y", 10)
+        //     .attr("fill", "currentColor")
+        //     .attr("text-anchor", "start")
+        //     .text("↑ Number of Devices"));
 
-      let xAxis = d3.axisBottom().scale(xScale);
-      let yAxis = d3.axisLeft().scale(yScale);
-    
-      mainSvg.select(".x-axis").remove()
-      mainSvg.select(".y-axis").remove()
-
+      // Append a path for each series.
       mainSvg.append("g")
-      .attr("transform", `translate(${plotMargin}, ${plotHeight + plotMargin})`)
-      .attr("class", "x-axis")
-      .call(xAxis);
-  
-      mainSvg.append("g")
-          .attr("transform", `translate(${plotMargin}, ${plotMargin})`)
-          .attr("class", "y-axis")
-          .call(yAxis);
+      .attr("transform", `translate(${plotMargin}, ${plotMargin})`)
+      .selectAll()
+      .data(series)
+      .join("path")
+        .attr("fill", d => color(d.key))
+        .attr("d", area)
+      .append("title")
+        .text(d => d.key);
 
+      // Append the horizontal axis atop the area.
+      mainSvg.append("g")
+        .attr("transform", `translate(${plotMargin}, ${plotHeight + plotMargin})`)
+        .call(d3.axisBottom(x).tickSizeOuter(0));
       
 	}, [timethreshold]);
  
