@@ -67,7 +67,7 @@ const SummaryDev = (props) => {
             .data(plotData)
             .enter()
             .append('rect')  
-            .attr("x", 10)
+            // .attr("x", 10)
             .attr("y",(d,i)=> 20*i+7)
             .attr("height", 17)
             .attr("width", 17)
@@ -76,9 +76,10 @@ const SummaryDev = (props) => {
         sPlotSvg.selectAll('text')
             .data(plotData)
             .join('text')
-            .attr("x",35)
+            // .attr("x",35)
+            .attr("x", 25)
             .attr("y",(d,i)=>20*(i+1)+1)
-            .attr("font-size", 18)
+            .attr("font-size", 16)
             .text((d,i)=>`${d.name} - ${d.count} (${d.ratio}%)`);
 
     }, []);
