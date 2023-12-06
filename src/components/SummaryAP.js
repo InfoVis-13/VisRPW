@@ -6,6 +6,7 @@ import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { StyledTypography, StyledAccordionSummary, componentStyles } from "../common/StyledComponents.js";
+import { Style } from "@material-ui/icons";
 
 const SummaryAP = (props) => {
     
@@ -47,6 +48,9 @@ const SummaryAP = (props) => {
 
 	return (
     <div style={{ ...componentStyles, height: props.height, borderRadius: 15, padding:`${padding}px`}}>
+        <StyledTypography variant="h6" component="div" sx={{mb: 5}}>
+            Summary of APs
+        </StyledTypography>
         <Accordion sx={{ boxShadow:"none" }} defaultExpanded={true}>
             <StyledAccordionSummary
                 expandIcon={<ExpandMoreIcon />}

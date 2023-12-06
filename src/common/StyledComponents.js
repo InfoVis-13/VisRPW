@@ -33,6 +33,9 @@ export const StyledTypography = withStyles({
             else if (props.variant === "subtitle1") return 18;
             else return 16;
         },
+        flexGrow: 1,
+        pl:1,
+        mt:1 
     }
 })(Typography);
 
