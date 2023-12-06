@@ -1,0 +1,7 @@
+{
+    "standard": "WiFi 5",
+    "band": "5 GHz",
+    "channelNumber": "149",
+    "bandwidth": "20 MHz",
+    "txpower": "23 dBm"
+}

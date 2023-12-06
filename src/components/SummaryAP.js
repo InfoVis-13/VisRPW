@@ -36,10 +36,11 @@ const SummaryAP = (props) => {
         .selectAll('text')
         .data(arrtext)
         .join('text')        
-        .attr("x",20)
+        // .attr("x",20)
+        .attr("x", 7)
         .attr("y",(d,i)=>{textheight += 20; return textheight;})
         .text((d,i)=>d)
-        .attr("font-size", 18)
+        .attr("font-size", 16)
         //.style("font-size", "10px")
 
     }, []);

@@ -3,6 +3,7 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import Typography from '@mui/material/Typography';
 
 export const StyledAccordionSummary = withStyles({
+    fontFamily: "Pretendard",
     fontWeight: "bold",
     root: {
         minHeight: 30,
@@ -26,12 +27,14 @@ export const StyledAccordionSummary = withStyles({
 
 export const StyledTypography = withStyles({
     root: {
+        fontFamily: "Pretendard",
         fontSize: 20,
         fontWeight: "bold",
     }
 })(Typography);
 
 export const componentStyles = {
+    fontFamily: "Pretendard",
     borderRadius: 4, 
     border:"2px solid #b5b5b5", 
     backgroundColor:"white",
