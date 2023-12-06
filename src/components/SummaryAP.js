@@ -46,7 +46,7 @@ const SummaryAP = (props) => {
     }, []);
 
 	return (
-    <div style={{ ...componentStyles, height: props.height, borderRadius: 10, padding:`${padding}px`}}>
+    <div style={{ ...componentStyles, height: props.height, borderRadius: 15, padding:`${padding}px`}}>
         <Accordion sx={{ boxShadow:"none" }} defaultExpanded={true}>
             <StyledAccordionSummary
                 expandIcon={<ExpandMoreIcon />}

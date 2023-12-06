@@ -29,7 +29,6 @@ export const StyledTypography = withStyles({
     root: {
         fontFamily: "Pretendard",
         fontSize: 20,
-        fontWeight: "bold",
     }
 })(Typography);
 

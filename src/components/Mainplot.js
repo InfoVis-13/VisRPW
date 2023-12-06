@@ -11,6 +11,7 @@ import { componentStyles, StyledTypography } from "../common/StyledComponents.js
 
 import apdata from "../data/ap1_dummy.json";
 import DataContext from './DataContext.js';
+import TimeNumDevGroup from "./plots/TimeNumDevGroup.js";
 
 const Mainplot = (props) => {
   const dataContext = React.useContext(DataContext);
@@ -21,9 +22,10 @@ const Mainplot = (props) => {
   const mainWidth = (window.innerWidth*0.92)*0.63;
   const mainHeight = window.innerHeight*0.9;
   const APWidth = (window.innerWidth*0.92)*0.16;
-  const APHeight = (mainHeight-2*plotMargin)/2;
+  const APHeight = (mainHeight-2.5*plotMargin)/2;
   const ControlWidth = APWidth;
   const ControlHeight = mainHeight;
+  const mainPadding = 15;
   const padding = 10;
   const titleHeight = 35;
   const interComponentMargin = (window.innerWidth*0.92)*0.015;
@@ -35,7 +37,6 @@ const Mainplot = (props) => {
     let cnt = 0;
     for (let i=1; ;i++) {
       if (d[`sta${i}`] === -1.0) continue;
-      // console.log(d[`sta${i}`]);
       d[`sta${i}`] = parseFloat(d[`sta${i}`]);
       sum += d[`sta${i}`];
       squareSum += d[`sta${i}`]*d[`sta${i}`];
@@ -54,18 +55,11 @@ const Mainplot = (props) => {
  
   const smainPlot = useRef(null);   
   const [timethreshold, settimeshow] = useState([-1,999999]);
-  dataContext.setTimeShow = settimeshow;
-  const plotWidth = mainWidth-2*plotMargin-2*padding;
-  const plotHeight = mainHeight-titleHeight-2*plotMargin-2*padding;   
-
-  const criteria = [1.0, 5.0, 15.0, 25.0];
-  const labels = ["veryPoor", "poor", "normal", "good", "veryGood"];
-  const labelColor = ["#FF0000", "#FF8000", "#FFD400", "#80FF00", "#009000"];
+  dataContext.setTimeShow = settimeshow; 
   
   useEffect(() => {
     
       const mainSvg = d3.select(smainPlot.current);
-      const timeGap = data[1].time-data[0].time;
 
       // const statsData = data.map(d => {
       //     let eachData = {
@@ -151,102 +145,6 @@ const Mainplot = (props) => {
       //     .attr("transform", `translate(${plotMargin}, ${plotMargin})`)
       //     .attr("class", "y-axis")
       //     .call(yAxis);
-
-      let statsData = [];
-
-      for(let i=0; i<data.length; i++) {
-        let d = data[i];
-        let eachData = {
-            "veryGood": 0,
-            "good" : 0,
-            "normal": 0,
-            "poor" : 0,
-            "veryPoor" : 0
-        };
-        let cnt = 0;
-        for(let j=0; ; j++){
-            if (d[`sta${j+1}`] === -1.0) continue;
-            let labIdx = 0;
-            for(labIdx; labIdx<criteria.length; labIdx++){
-                if(d[`sta${j+1}`] <= criteria[labIdx]) break;
-            }
-            eachData[labels[labIdx]]++;
-            cnt++;
-            if (cnt === d.number) break;
-        }
-        for (let j=0; j<labels.length; j++) {
-          statsData.push({
-            "time": d.time,
-            "number": d.number,
-            "label": labels[j],
-            "count": eachData[labels[j]]
-          });
-        }
-      }
-          
-      statsData.filter(d => ((d.time >= timethreshold[0]) && (d.time <= timethreshold[1])));
-      console.log(statsData);
-
-      // Determine the series that need to be stacked.
-      const series = d3.stack()
-        .keys(d3.union(statsData.map(d => d.label))) // distinct series keys, in input order
-        .value(([, D], key) => D.get(key).count) // get value for each series key and stack
-      (d3.index(statsData, d => d.time, d => d.label)); // group by stack then series key
-
-      // Prepare the scales for positional and color encodings.
-      const x = d3.scaleUtc()
-        .domain([
-              d3.min(statsData, d => d.time),
-              d3.max(statsData, d => d.time)+timeGap
-        ])
-        // .domain(d3.extent(statsData, d => d.time))
-        .range([0, plotWidth]);
-
-      const y = d3.scaleLinear()
-        .domain([0, d3.max(series, d => d3.max(d, d => d[1]))])
-        .rangeRound([plotHeight, 0]);
-
-      const color = d3.scaleOrdinal()
-        .domain(series.map(d => d.key))
-        .range(labelColor);
-        // .range(d3.schemeTableau10);
-
-      // Construct an area shape.
-      const area = d3.area()
-        .x(d => x(d.data[0]))
-        .y0(d => y(d[0]))
-        .y1(d => y(d[1]));
-
-      // Add the y-axis, remove the domain line, add grid lines and a label.
-      mainSvg.append("g")
-        .attr("transform", `translate(${plotMargin}, ${plotMargin})`)
-        .call(d3.axisLeft(y).ticks(plotHeight / 80))
-        .call(g => g.select(".domain").remove())
-        .call(g => g.selectAll(".tick line").clone()
-            .attr("x2", plotWidth)
-            .attr("stroke-opacity", 0.1));
-        // .call(g => g.append("text")
-        //     .attr("x", -plotMargin)
-        //     .attr("y", 10)
-        //     .attr("fill", "currentColor")
-        //     .attr("text-anchor", "start")
-        //     .text("↑ Number of Devices"));
-
-      // Append a path for each series.
-      mainSvg.append("g")
-      .attr("transform", `translate(${plotMargin}, ${plotMargin})`)
-      .selectAll()
-      .data(series)
-      .join("path")
-        .attr("fill", d => color(d.key))
-        .attr("d", area)
-      .append("title")
-        .text(d => d.key);
-
-      // Append the horizontal axis atop the area.
-      mainSvg.append("g")
-        .attr("transform", `translate(${plotMargin}, ${plotHeight + plotMargin})`)
-        .call(d3.axisBottom(x).tickSizeOuter(0));
       
 	}, [timethreshold]);
  
@@ -257,15 +155,21 @@ const Mainplot = (props) => {
       </Grid>
       <Grid item xs={2} sx={{ display:"flex", flexDirection:"column", mr: `${interComponentMargin}px`}}>
         <SummaryAP width={APWidth} height={APHeight} margin={plotMargin} padding={padding}/>
-        <SummaryDev apdata={data} width={APWidth} height={APHeight} margin={plotMargin} padding={padding}/>
+        <SummaryDev apdata={data} width={APWidth} height={APHeight} margin={plotMargin} padding={mainPadding}/>
       </Grid>
-      <Grid item xs={7.6} sx={{ ...componentStyles, height: mainHeight, p: `${padding}px`}}>
-        <StyledTypography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, fontSize: 20, fontWeight: "bold", maxHeight: titleHeight }}>
+      <Grid item xs={7.6} sx={{ ...componentStyles, height: mainHeight, p: `${mainPadding}px`}}>
+        <StyledTypography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, maxHeight: titleHeight }}>
           The number of Devices
         </StyledTypography>
-        <svg ref={smainPlot} width={mainWidth} height={mainHeight}/> 
+        <TimeNumDevGroup
+          data={data}
+          width={mainWidth-2*mainPadding}
+          height={mainHeight-titleHeight-2*mainPadding}
+          plotMargin={plotMargin}
+        />
+        {/* <svg ref={smainPlot} width={mainWidth} height={mainHeight}/>  */}
       </Grid>
-      <Grid item xs={2} sx={{ ...componentStyles, ml: `${interComponentMargin}px`, height: ControlHeight, padding: `${padding}px`}}>
+      <Grid item xs={2} sx={{ ...componentStyles, ml: `${interComponentMargin}px`, height: ControlHeight, padding: `${mainPadding}px`}}>
         <ControlPanel width={ControlWidth} height={ControlHeight} margin={plotMargin} padding={padding}/>
       </Grid>
       <Grid item xs={12} sx={componentStyles}>
