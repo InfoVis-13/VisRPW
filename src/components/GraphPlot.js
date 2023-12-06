@@ -1,6 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
-import Typography from '@mui/material/Typography';
 import DataContext from './DataContext.js';
 
 import { StyledTypography } from "../common/StyledComponents.js";
@@ -40,7 +39,7 @@ const GraphPlot = (props) => {
     var rightbrushdoing = false;
 
     function brushedLeft({selection}) {
-        if (leftbrushdoing == true)
+        if (leftbrushdoing === true)
             return;
         leftbrushdoing = true;
         if (selection === null) {
@@ -63,7 +62,7 @@ const GraphPlot = (props) => {
     }
 
     function brushedRight({selection}) {
-        if (rightbrushdoing == true)
+        if (rightbrushdoing === true)
             return;
         rightbrushdoing = true;
         if (selection === null) {
@@ -185,13 +184,14 @@ const GraphPlot = (props) => {
 	return (
     <div style={{display:"flex"}}>
         <div style={{padding: padding}}>
-            <StyledTypography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, fontSize: 20, fontWeight: "bold", maxHeight: titleHeight }}>
+            <StyledTypography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, maxHeight: titleHeight }}>
+
                 The number of Devices
             </StyledTypography>
             <svg ref={numDevPlot} width={width} height={height}/>
         </div>
         <div style={{padding: padding}}>
-            <StyledTypography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, fontSize: 20, fontWeight: "bold", maxHeight: titleHeight }}>
+            <StyledTypography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, maxHeight: titleHeight }}>
                 Total Throughput
             </StyledTypography>
             <svg ref={tputPlot} width={width} height={height}/>

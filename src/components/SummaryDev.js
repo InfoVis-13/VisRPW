@@ -4,16 +4,18 @@ import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { StyledAccordionSummary, StyledTypography, componentStyles } from "../common/StyledComponents";
+import { criteria, labels, color } from "../common/Constants";
 
 const SummaryDev = (props) => {
     
     const apData = props.apdata;
     const sPlot = useRef(null);
     
+    console.log(criteria, labels);
     const padding = props.padding;
-    const criteria = [1.0, 5.0, 15.0, 25.0];
-    const labels = ["veryPoor", "poor", "normal", "good", "veryGood"];
-    const color = ["#FF0000", "#FF8000", "#FFD400", "#80FF00", "#009000"];
+    // const criteria = DataContext.criteria;
+    // const labels = ["veryPoor", "poor", "normal", "good", "veryGood"];
+    // const color = ["#FF0000", "#FF8000", "#FFD400", "#80FF00", "#009000"];
 
     useEffect(() => {  
         
@@ -71,7 +73,9 @@ const SummaryDev = (props) => {
             .attr("y",(d,i)=> 20*i+7)
             .attr("height", 17)
             .attr("width", 17)
-            .attr("fill", (d,i)=>color[i]);
+            .attr("fill", (d,i)=>color(d.name))
+            .attr("stroke", "gray")
+            .attr("stroke-opacity", 0.2);
 
         sPlotSvg.selectAll('text')
             .data(plotData)
@@ -85,14 +89,14 @@ const SummaryDev = (props) => {
     }, []);
 
 	return (
-    <div style={{ ...componentStyles, height: props.height, marginTop: 9.5, borderRadius: 10, padding:`${padding}px`}}>
+    <div style={{ ...componentStyles, height: props.height, marginTop: '15px', borderRadius: 15, padding:`${padding}px`}}>
         <Accordion sx={{ boxShadow:"none" }} defaultExpanded={true}>
             <StyledAccordionSummary
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls="AP1-content"
                 id="AP1-header"
             >
-                <StyledTypography>AP 1</StyledTypography>
+                <StyledTypography variant="subtitle1">AP 1</StyledTypography>
             </StyledAccordionSummary>
             <AccordionDetails sx={{ p: 1}}>
                 <svg ref={sPlot} width={props.width} height={props.height/2} />  
