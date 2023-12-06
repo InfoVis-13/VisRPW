@@ -12,7 +12,7 @@ function App() {
   
   return (
     <div className="App">
-      <AppBar position="static" sx={{width: "100%", height: 80, backgroundColor: "#003458"}}>
+      <AppBar position="static" sx={{width: "100%", height: 80, backgroundColor: "#060017"}}>
         <Toolbar>
           {/* <IconButton
             size="large"
@@ -36,3 +36,5 @@ function App() {
 }
 
 export default App;
+
+// "#003458"
