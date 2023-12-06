@@ -16,16 +16,15 @@ import TimeNumDevGroup from "./plots/TimeNumDevGroup.js";
 const Mainplot = (props) => {
   const dataContext = React.useContext(DataContext);
 
-  const mainPadding = 15;
   const padding = 15;
   const titleHeight = 35;
-  const interComponentMargin = (window.innerWidth*0.92)*0.01;
+  const interComponentMargin = (window.innerWidth*0.88)*0.01;
   const plotMargin = 30;
-  const graphWidth = window.innerWidth*0.92;
+  const graphWidth = window.innerWidth*0.86;
   const graphHeight = window.innerHeight*0.3;
-  const mainWidth = (window.innerWidth*0.92)*0.78;
+  const mainWidth = (window.innerWidth*0.86)*0.78;
   const mainHeight = window.innerHeight;
-  const APWidth = (window.innerWidth*0.92)*0.2;
+  const APWidth = (window.innerWidth*0.86)*0.2;
   const APHeight = (mainHeight-2*plotMargin)/2-padding;
   // const ControlWidth = APWidth;
   // const ControlHeight = mainHeight;
@@ -151,7 +150,7 @@ const Mainplot = (props) => {
 	}, [timethreshold]);
  
 	return (
-		<Grid container sx={{width: "100%", p: "4%"}}>
+		<Grid container sx={{width: "100%", pt: "4%", pb: "4%", pl: "7%", pr: "7%"}}>
       <Grid item xs={12} sx={componentStyles}>
         <GraphPlot data={data} width={graphWidth} height={graphHeight} margin={plotMargin} titleHeight={titleHeight}/>
       </Grid>
@@ -160,14 +159,14 @@ const Mainplot = (props) => {
         <ControlPanel width={APWidth} height={APHeight} margin={plotMargin} padding={padding}/>
         {/* <SummaryDev apdata={data} width={APWidth} height={APHeight} margin={plotMargin} padding={mainPadding}/> */}
       </Grid>
-      <Grid item xs={9.36} sx={{ ...componentStyles, height: mainHeight, p: `${mainPadding}px`}}>
-        <StyledTypography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, maxHeight: titleHeight }}>
+      <Grid item xs={9.36} sx={{ ...componentStyles, height: mainHeight, p: `${padding}px`}}>
+        <StyledTypography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, maxHeight: titleHeight, textAlign: 'right' }}>
           The number of Devices
         </StyledTypography>
         <TimeNumDevGroup
           data={data}
-          width={mainWidth-2*mainPadding}
-          height={mainHeight-titleHeight-2*mainPadding}
+          width={mainWidth-2*padding}
+          height={mainHeight-titleHeight-2*padding}
           plotMargin={plotMargin}
         />
         {/* <svg ref={smainPlot} width={mainWidth} height={mainHeight}/>  */}

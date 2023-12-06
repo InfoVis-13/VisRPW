@@ -42,13 +42,17 @@ export const StyledTypography = withStyles({
     root: {
         fontFamily: "Pretendard",
         fontSize: (props) => {
-            if (props.variant === "h6") return 20;
+            if (props.variant === "h6") return 21;
             else if (props.variant === "subtitle1") return 18;
             else return 16;
         },
+        fontWeight: (props) => {
+            if (props.variant === "h6") return "600";
+            else return "normal";
+        },
         flexGrow: 1,
         pl:1,
-        mt:1 
+        mt:1,
     }
 })(Typography);
 
