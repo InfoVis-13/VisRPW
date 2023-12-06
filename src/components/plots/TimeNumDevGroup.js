@@ -12,7 +12,7 @@ const TimeNumDevGroup = (props) => {
     const plotMargin = props.plotMargin;
 
     const plotWidth = width-2*plotMargin;
-    const plotHeight = height-2*plotMargin;   
+    const plotHeight = height-3*plotMargin;   
 
     useEffect(() => {
         const plotSvg = d3.select(plot.current);
@@ -49,7 +49,7 @@ const TimeNumDevGroup = (props) => {
         }
             
         // statsData.filter(d => ((d.time >= timethreshold[0]) && (d.time <= timethreshold[1])));
-        console.log(statsData);
+        // console.log(statsData);
 
         plotSvg.selectAll(".mainrect").remove();
 
@@ -58,7 +58,7 @@ const TimeNumDevGroup = (props) => {
             .keys(d3.union(statsData.map(d => d.label))) // distinct series keys, in input order
             .value(([, D], key) => D.get(key).count) // get value for each series key and stack
         (d3.index(statsData, d => d.time, d => d.label)); // group by stack then series key
-        console.log("series", series);
+        // console.log("series", series);
 
         // Prepare the scales for positional and color encodings.
         const x = d3.scaleBand()
@@ -84,7 +84,7 @@ const TimeNumDevGroup = (props) => {
         //   .range([0, plotWidth]);
 
         const y = d3.scaleLinear()
-            .domain([0, d3.max(series, d => d3.max(d, d => d[1]))])
+            .domain([0, d3.max(series, d => d3.max(d, d => d[1])+1)])
             .rangeRound([plotHeight, 0]);
 
         // const color = d3.scaleOrdinal()
@@ -97,7 +97,7 @@ const TimeNumDevGroup = (props) => {
         //   .range(d3.schemeSpectral[series.length])
         //   .unknown("#ccc");
         
-        console.log("color", color);
+        // console.log("color", color);
 
         const xAxisScale = d3.scaleLinear()
             .domain([ d3.min(statsData, d => d.time), d3.max(statsData, d => d.time) ])
@@ -107,12 +107,12 @@ const TimeNumDevGroup = (props) => {
 
         // Append the horizontal axis atop the area.
         plotSvg.append("g").attr("class", "x axis")
-            .attr("transform", `translate(${plotMargin}, ${plotHeight + plotMargin})`)
+            .attr("transform", `translate(${plotMargin}, ${plotHeight + plotMargin*2})`)
             .call(xAxis);
         
         // Add the y-axis, remove the domain line, add grid lines and a label.
         plotSvg.append("g").attr("class", "y axis").call(yAxis)
-            .attr("transform", `translate(${plotMargin}, ${plotMargin})`)
+            .attr("transform", `translate(${plotMargin}, ${plotMargin*2})`)
             .call(g => g.select(".domain").remove())
             .call(g => g.selectAll(".tick line").clone()
                 .attr("x2", plotWidth)
@@ -143,7 +143,7 @@ const TimeNumDevGroup = (props) => {
 
         // Append a group for each series, and a rect for each element in the series.
         plotSvg.append("g")
-            .attr("transform", `translate(${plotMargin}, ${plotMargin})`)
+            .attr("transform", `translate(${plotMargin}, ${plotMargin*2})`)
             .selectAll()
             .data(series)
             .join("g")
@@ -158,6 +158,50 @@ const TimeNumDevGroup = (props) => {
             .attr("width", x.bandwidth())
             .attr("stroke", "gray")
             .attr("stroke-opacity", 0.2);
+        
+        // Add a legend for each color.
+        plotSvg.append("g")
+            .attr("transform", `translate(${plotWidth+plotMargin/2}, ${plotMargin-15})`)
+            .selectAll("text")
+            .data(["Device Status", ...labels])
+            .enter()
+            .append('text')
+            .text(d => d) 
+            .attr("class", "legend")
+            .attr("x", (d, i) => {
+                if(i === 0) return -45;
+                return -(52*(i-1)+10+26);
+            })
+            .attr("y", (d, i) => (i===0)?-8:22)
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "middle")
+            .attr("font-size", 12);
+
+        plotSvg.append("g")
+            .attr("transform", `translate(${plotWidth+plotMargin/2}, ${plotMargin-15})`)
+            .selectAll("rect")
+            .data(labels)
+            .join("rect")
+            .attr("x", (d, i) => -(52*(i+1)+10))
+            // .attr("y", 20)
+            .attr("width", 50)
+            .attr("height", 10)
+            .attr("fill", (d,i)=>color(d))
+            .attr("stroke", "gray")
+            .attr("stroke-opacity", 0.3);
+        
+        plotSvg.append("g")
+            .attr("transform", `translate(${plotWidth+plotMargin/2}, ${plotMargin-15})`)
+            .selectAll("rect")
+            .data(labels)
+            .join("rect")
+            .attr("x", (d, i) => -(52*(i+1)+10-26))
+            .attr("y", 10)
+            .attr("width", 0.01)
+            .attr("height", 3)
+            .attr("fill", "black")
+            .attr("stroke", "black");
+        
     });
 
     return (
