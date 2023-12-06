@@ -185,6 +185,7 @@ const GraphPlot = (props) => {
     <div style={{display:"flex"}}>
         <div style={{padding: padding}}>
             <StyledTypography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, maxHeight: titleHeight }}>
+
                 The number of Devices
             </StyledTypography>
             <svg ref={numDevPlot} width={width} height={height}/>

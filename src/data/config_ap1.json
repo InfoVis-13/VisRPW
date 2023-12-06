@@ -1,0 +1,7 @@
+{
+    "standard": "WiFi 5",
+    "band": "2.4 GHz",
+    "channelNumber": "1",
+    "bandwidth": "20 MHz",
+    "txpower": "23 dBm"
+}
