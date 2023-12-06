@@ -28,7 +28,11 @@ export const StyledAccordionSummary = withStyles({
 export const StyledTypography = withStyles({
     root: {
         fontFamily: "Pretendard",
-        fontSize: 20,
+        fontSize: (props) => {
+            if (props.variant === "h6") return 20;
+            else if (props.variant === "subtitle1") return 18;
+            else return 16;
+        },
     }
 })(Typography);
 

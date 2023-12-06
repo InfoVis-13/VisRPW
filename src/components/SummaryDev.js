@@ -96,7 +96,7 @@ const SummaryDev = (props) => {
                 aria-controls="AP1-content"
                 id="AP1-header"
             >
-                <StyledTypography>AP 1</StyledTypography>
+                <StyledTypography variant="subtitle1">AP 1</StyledTypography>
             </StyledAccordionSummary>
             <AccordionDetails sx={{ p: 1}}>
                 <svg ref={sPlot} width={props.width} height={props.height/2} />  
