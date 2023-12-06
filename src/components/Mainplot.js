@@ -29,6 +29,8 @@ const Mainplot = (props) => {
   const APHeight = (mainHeight-2*plotMargin)/2-padding;
   // const ControlWidth = APWidth;
   // const ControlHeight = mainHeight;
+
+  const [numAps , setNumAps] = useState(2);
  
   const data = apdata.map(d => {
     const number = parseInt(d.number);
@@ -158,7 +160,7 @@ const Mainplot = (props) => {
         <ControlPanel width={APWidth} height={APHeight} margin={plotMargin} padding={padding}/>
         {/* <SummaryDev apdata={data} width={APWidth} height={APHeight} margin={plotMargin} padding={mainPadding}/> */}
       </Grid>
-      <Grid item xs={9.35} sx={{ ...componentStyles, height: mainHeight, p: `${mainPadding}px`}}>
+      <Grid item xs={9.36} sx={{ ...componentStyles, height: mainHeight, p: `${mainPadding}px`}}>
         <StyledTypography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, maxHeight: titleHeight }}>
           The number of Devices
         </StyledTypography>

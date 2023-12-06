@@ -2,87 +2,74 @@ import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 
 import config from '../data/config.json';
+import configAp1 from '../data/config_ap1.json';
+import configAp2 from '../data/config_ap2.json';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
+import Stack from '@mui/material/Stack';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { StyledTypography, StyledAccordionSummary, componentStyles } from "../common/StyledComponents.js";
-import { Style } from "@material-ui/icons";
+import { StyledTypography, StyledAccordionSummary, StyledAccordion, componentStyles } from "../common/StyledComponents.js";
 
 const SummaryAP = (props) => {
     
+    const [numAps , setNumAps] = useState(2);
+    const [apConfig, setApConfig] = useState([configAp1, configAp2]);
+    const [expanded, setExpanded] = useState(false);
     const padding = props.padding;
     const sPlot = useRef(null);  
 
+    const handleChange = (panel) => (event, isExpanded) => {
+        setExpanded(isExpanded ? panel : false);
+    };
+
+    const DisplayAPConfig = (i, config) => {
+        return (
+            <StyledAccordion 
+                sx={{ boxShadow:"none" }} 
+                // defaultExpanded={open[i]} 
+                expanded={expanded===`AP${i+1}`}
+                onChange={handleChange(`AP${i+1}`)}
+            >
+                <StyledAccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls={`AP${i+1}-content`}
+                    id={`AP${i+1}}-header`}
+                >
+                    <StyledTypography variant="subtitle1" sx={{
+                        "font-weight":(expanded===`AP${i+1}`)?'600':'400',
+                        "color":(expanded===`AP${i+1}`)?'black':'grey.500',
+                    }}
+                    >
+                        AP {i+1}
+                    </StyledTypography>
+                </StyledAccordionSummary>
+                <AccordionDetails sx={{ p: 3}}>
+                    {Object.keys(config).map(key => {
+                        return (
+                            <Stack direction="row" spacing={2}>
+                                <StyledTypography>{key}</StyledTypography>
+                                <StyledTypography sx={{textAlign: 'right'}}>{config[key]}</StyledTypography>
+                            </Stack>
+                        );
+                    })}
+                    {/* <svg ref={sPlot} width={props.width} height={props.height/2} />   */}
+                </AccordionDetails>
+            </StyledAccordion>
+        );
+    }
+
     useEffect(() => {       
-
-        console.log( config );
-
-        const arrtext = [];
-        let confkeys = Object.keys(config)
-        for (let i = 0; i < confkeys.length; i++)
-        {
-               //arrtext.push(confkeys[i])
-               let contents = Object.keys(config[confkeys[i]]);
-               console.log(contents);
-               for(let j = 0; j < contents.length; j++)
-               {
-                    arrtext.push(contents[j] + " : " + config[confkeys[i]][contents[j]]);
-               }
-               break;
-        }
-
-        var textheight = 0;
-
-        d3.select(sPlot.current)
-        .selectAll('text')
-        .data(arrtext)
-        .join('text')        
-        // .attr("x",20)
-        .attr("x", 7)
-        .attr("y",(d,i)=>{textheight += 20; return textheight;})
-        .text((d,i)=>d)
-        .attr("font-size", 16)
-        //.style("font-size", "10px")
 
     }, []);
 
 	return (
     <div style={{ ...componentStyles, height: props.height, borderRadius: 15, padding:`${padding}px`}}>
-        <StyledTypography variant="h6" component="div" sx={{mb: 5}}>
+        <StyledTypography variant="h6" component="div" sx={{mb: 3}}>
             Summary of APs
         </StyledTypography>
-        <Accordion sx={{ boxShadow:"none" }} defaultExpanded={true}>
-            <StyledAccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="AP1-content"
-                id="AP1-header"
-            >
-                <StyledTypography variant="subtitle1">AP 1</StyledTypography>
-            </StyledAccordionSummary>
-            <AccordionDetails sx={{ p: 1}}>
-                <svg ref={sPlot} width={props.width} height={props.height/2} />  
-            </AccordionDetails>
-        </Accordion>
-        <Accordion style={{display:"none"}} sx={{ boxShadow:"none" }} defaultExpanded={true}>
-            <StyledAccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="AP2-content"
-                id="AP2-header"
-            >
-                <StyledTypography variant="subtitle1">AP 2</StyledTypography>
-            </StyledAccordionSummary>
-            
-        </Accordion>
-        <Accordion style={{display:"none"}} sx={{ boxShadow:"none" }} defaultExpanded={true}>
-            <StyledAccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="AP3-content"
-                id="AP3-header"
-            >
-                <StyledTypography>AP 3</StyledTypography>
-            </StyledAccordionSummary>
-            
-        </Accordion>
+        {apConfig.map((config, idx)=> {
+            return DisplayAPConfig(idx, config);
+        })}
     </div>
     )
 };

@@ -1,6 +1,19 @@
 import withStyles from '@mui/styles/withStyles';
+import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Typography from '@mui/material/Typography';
+
+export const StyledAccordion = withStyles({
+    root: {
+        boxShadow:"none",
+        '&.Mui-expanded': {
+            margin: 0
+        },
+        '&:before': {
+            display: 'none',
+        },
+    }
+})(Accordion);
 
 export const StyledAccordionSummary = withStyles({
     fontFamily: "Pretendard",
