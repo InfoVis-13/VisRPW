@@ -10,27 +10,30 @@ import TotalSummary from "./TotalSummary.js";
 import { componentStyles, StyledTypography } from "../common/StyledComponents.js";
 
 import apdata from "../data/ap1_dummy.json";
+import throughputAP1 from "../data/throughput_ap1.json";
+import throughputAP2 from "../data/throughput_ap2.json";
 import DataContext from './DataContext.js';
 import TimeNumDevGroup from "./plots/TimeNumDevGroup.js";
 
 const Mainplot = (props) => {
   const dataContext = React.useContext(DataContext);
 
-  const mainPadding = 15;
   const padding = 15;
   const titleHeight = 35;
-  const interComponentMargin = (window.innerWidth*0.92)*0.01;
+  const interComponentMargin = (window.innerWidth*0.88)*0.01;
   const plotMargin = 30;
-  const graphWidth = window.innerWidth*0.92;
-  const graphHeight = window.innerHeight*0.3;
-  const mainWidth = (window.innerWidth*0.92)*0.78;
-  const mainHeight = window.innerHeight;
-  const APWidth = (window.innerWidth*0.92)*0.2;
-  const APHeight = (mainHeight-2*plotMargin)/2-padding;
+  const graphWidth = window.innerWidth*0.84;
+  const graphHeight = window.innerHeight*0.35;
+  const mainWidth = (window.innerWidth*0.84)*0.78;
+  const mainHeight = window.innerHeight*0.95;
+  const APWidth = (window.innerWidth*0.84)*0.2;
+  const APHeight = (mainHeight-2*plotMargin)/2-padding/2;
   // const ControlWidth = APWidth;
   // const ControlHeight = mainHeight;
+
+  const [numAps , setNumAps] = useState(2);
  
-  const data = apdata.map(d => {
+  const data = throughputAP1.map(d => {
     const number = parseInt(d.number);
     let sum = 0;
     let squareSum = 0;
@@ -49,6 +52,7 @@ const Mainplot = (props) => {
       "section": parseInt(d.section), 
       "number": number,
       "fairness": (sum*sum)/(cnt*squareSum),
+      "total": parseFloat(d.total)
     }
   });
   console.log(data);
@@ -149,7 +153,7 @@ const Mainplot = (props) => {
 	}, [timethreshold]);
  
 	return (
-		<Grid container sx={{width: "100%", p: "4%"}}>
+		<Grid container sx={{width: "100%", pt: "4%", pb: "4%", pl: "8%", pr: "8%"}}>
       <Grid item xs={12} sx={componentStyles}>
         <GraphPlot data={data} width={graphWidth} height={graphHeight} margin={plotMargin} titleHeight={titleHeight}/>
       </Grid>
@@ -158,14 +162,14 @@ const Mainplot = (props) => {
         <ControlPanel width={APWidth} height={APHeight} margin={plotMargin} padding={padding}/>
         {/* <SummaryDev apdata={data} width={APWidth} height={APHeight} margin={plotMargin} padding={mainPadding}/> */}
       </Grid>
-      <Grid item xs={9.35} sx={{ ...componentStyles, height: mainHeight, p: `${mainPadding}px`}}>
-        <StyledTypography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, maxHeight: titleHeight }}>
+      <Grid item xs={9.36} sx={{ ...componentStyles, height: mainHeight, p: `${padding}px`}}>
+        <StyledTypography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, maxHeight: titleHeight, backgroundColor: "rgba(0,0,0,0)" }}>
           The number of Devices
         </StyledTypography>
         <TimeNumDevGroup
           data={data}
-          width={mainWidth-2*mainPadding}
-          height={mainHeight-titleHeight-2*mainPadding}
+          width={mainWidth-2*padding}
+          height={mainHeight-titleHeight-2*padding}
           plotMargin={plotMargin}
         />
         {/* <svg ref={smainPlot} width={mainWidth} height={mainHeight}/>  */}

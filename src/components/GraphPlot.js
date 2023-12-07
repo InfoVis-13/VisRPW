@@ -140,7 +140,7 @@ const GraphPlot = (props) => {
         let tputYScale = d3.scaleLinear()
                         .domain([
                             0,
-                            d3.max(data, d => d["total throughput"])+30
+                            d3.max(data, d => d["total"])+30
                         ])
                         .range([plotHeight, 0]);
 
@@ -150,7 +150,7 @@ const GraphPlot = (props) => {
 
         const line = d3.line()
                         .x(d => xScale(d.time))
-                        .y(d => tputYScale(d["total throughput"]))
+                        .y(d => tputYScale(d["total"]))
                         .curve(d3.curveLinear);
 
         tputSvg.append("g")
