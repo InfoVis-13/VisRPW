@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 import DataContext from './DataContext.js';
 
-import { StyledTypography } from "../common/StyledComponents.js";
+import { StyledTypography, componentStyles } from "../common/StyledComponents.js";
 
 const GraphPlot = (props) => {
 
@@ -12,9 +12,13 @@ const GraphPlot = (props) => {
     const margin = props.margin;
     const padding = 10;
     const titleHeight = props.titleHeight;
-    const width = props.width/2-2*padding;
-    const height = props.height - titleHeight -2*padding;
-    const plotWidth = width-3*margin;
+    // const width = props.width/2-2*padding;
+    // const height = props.height - titleHeight -2*padding;
+    const width = props.width;
+    const height = props.height;
+    // const plotWidth = width-3*margin;
+    // const plotHeight = height-2*margin;
+    const plotWidth = width-2*margin;
     const plotHeight = height-2*margin;
 
     const numDevPlot = useRef(null);
@@ -182,21 +186,26 @@ const GraphPlot = (props) => {
     }, []);
 
 	return (
-    <div style={{display:"flex"}}>
-        <div style={{padding: padding}}>
-            <StyledTypography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, maxHeight: titleHeight }}>
-
-                The number of Devices
-            </StyledTypography>
-            <svg ref={numDevPlot} width={width} height={height}/>
-        </div>
-        <div style={{padding: padding}}>
-            <StyledTypography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, maxHeight: titleHeight }}>
-                Total Throughput
-            </StyledTypography>
-            <svg ref={tputPlot} width={width} height={height}/>
-        </div>
+    <div style={{ ...componentStyles, padding: `${padding}px`, borderRadius: 15}}>
+        <StyledTypography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, maxHeight: titleHeight }}>
+            The number of Devices
+        </StyledTypography>
+        <svg ref={numDevPlot} width={width} height={height}/>
     </div>
+    // <div style={{display:"flex"}}>
+    //     <div style={{padding: padding}}>
+    //         <StyledTypography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, maxHeight: titleHeight }}>
+    //             The number of Devices
+    //         </StyledTypography>
+    //         <svg ref={numDevPlot} width={width} height={height}/>
+    //     </div>
+    //     <div style={{padding: padding}}>
+    //         <StyledTypography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, maxHeight: titleHeight }}>
+    //             Total Throughput
+    //         </StyledTypography>
+    //         <svg ref={tputPlot} width={width} height={height}/>
+    //     </div>
+    // </div>
     )
 };
 export default GraphPlot;

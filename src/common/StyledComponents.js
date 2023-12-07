@@ -22,6 +22,7 @@ export const StyledAccordionSummary = withStyles({
         minHeight: 30,
         maxHeight: 30,
         marginTop: 5,
+        backgroundColor: "#ebebeb",
         '&.Mui-expanded': {
           minHeight: 30,
           maxHeight: 30,
@@ -30,7 +31,7 @@ export const StyledAccordionSummary = withStyles({
     content: {
         margin: 0,
         '&.Mui-expanded': {
-          margin: 0
+          margin: 0,
         }
     },
     expandIcon: {
@@ -61,6 +62,6 @@ export const componentStyles = {
     borderRadius: 4, 
     // border:"1px solid #474452", 
     boxShadow: "0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 10px 0px rgba(0,0,0,0.2), 0px 1px 10px 0px rgba(0,0,0,0.2)",
-    backgroundColor:"white",
+    backgroundColor: "#ebebeb",
     marginBottom: 2
 };

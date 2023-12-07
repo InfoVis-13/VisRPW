@@ -1,17 +1,21 @@
 import React, { useRef, useEffect, useState } from "react";
 
-import Typography from '@mui/material/Typography';
+import { componentStyles, StyledTypography } from "../common/StyledComponents.js";
 
 const TotalSummary = (props) => {
+
+    const padding = props.padding;
 
     useEffect(() => {  
         
     }, []);
 
 	return (
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, fontSize: 18, height: props.height }}>
-         Conclusion
-        </Typography>
+        <div style={{ ...componentStyles, width: props.width, height: props.height, borderRadius: 15 }}>
+            <StyledTypography variant="h6" component="div" sx={{mb: 3, padding: `${padding}px`}}>
+                Total Summary
+            </StyledTypography>
+        </div>
     )
 };
 export default TotalSummary;

@@ -43,7 +43,7 @@ const SummaryAP = (props) => {
                         AP {i+1}
                     </StyledTypography>
                 </StyledAccordionSummary>
-                <AccordionDetails sx={{ p: 3}}>
+                <AccordionDetails sx={{ p: 3, backgroundColor: "#ebebeb",}}>
                     {Object.keys(config).map(key => {
                         return (
                             <Stack direction="row" spacing={2}>
@@ -63,8 +63,8 @@ const SummaryAP = (props) => {
     }, []);
 
 	return (
-    <div style={{ ...componentStyles, height: props.height, borderRadius: 15, padding:`${padding}px`}}>
-        <StyledTypography variant="h6" component="div" sx={{mb: 3}}>
+    <div style={{ ...componentStyles, width: props.width, height: props.height, borderRadius: 15}}>
+        <StyledTypography variant="h6" component="div" sx={{mb: 3, padding: `${padding}px`}}>
             Summary of APs
         </StyledTypography>
         {apConfig.map((config, idx)=> {
