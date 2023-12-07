@@ -186,7 +186,7 @@ const GraphPlot = (props) => {
     }, []);
 
 	return (
-    <div style={{ ...componentStyles, padding: `${padding}px`, borderRadius: 15}}>
+    <div style={{ ...componentStyles, padding: `${padding}px`, borderRadius: 10}}>
         <StyledTypography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, maxHeight: titleHeight }}>
             The number of Devices
         </StyledTypography>

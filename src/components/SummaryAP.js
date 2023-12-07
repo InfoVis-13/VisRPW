@@ -63,8 +63,8 @@ const SummaryAP = (props) => {
     }, []);
 
 	return (
-    <div style={{ ...componentStyles, width: props.width, height: props.height, borderRadius: 15}}>
-        <StyledTypography variant="h6" component="div" sx={{mb: 3, padding: `${padding}px`}}>
+    <div style={{ ...componentStyles, width: props.width, height: props.height, borderRadius: 10}}>
+        <StyledTypography variant="h6" component="div" sx={{padding: `${padding}px`}}>
             Summary of APs
         </StyledTypography>
         {apConfig.map((config, idx)=> {

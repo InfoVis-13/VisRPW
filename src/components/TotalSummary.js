@@ -11,7 +11,7 @@ const TotalSummary = (props) => {
     }, []);
 
 	return (
-        <div style={{ ...componentStyles, width: props.width, height: props.height, borderRadius: 15 }}>
+        <div style={{ ...componentStyles, width: props.width, height: props.height, borderRadius: 10 }}>
             <StyledTypography variant="h6" component="div" sx={{mb: 3, padding: `${padding}px`}}>
                 Total Summary
             </StyledTypography>
