@@ -23,6 +23,7 @@ import DataContext from './DataContext.js';
 import { preprocessData, processDevNumDevGroupData, processTimeTputWithFairnessData } from '../common/DataProcessing.js';
 import TimeNumDevGroup from "./plots/TimeNumDevGroup.js";
 import TimeTputWithFairness from "./plots/TimeTputWithFairness.js";
+import TimeNumPktWithPdr from "./plots/TimeNumPktWithPdr.js";
 
 const Mainplot = (props) => {
   const dataContext = React.useContext(DataContext);
@@ -39,7 +40,7 @@ const Mainplot = (props) => {
   const mainHeight = entireHeight-2*padding;
 
   const [numAps , setNumAps] = useState(2);
-  const [graphNumber, setGraphNumber] = useState(1);
+  const [graphNumber, setGraphNumber] = useState(2);
   const data = [
       {
         "key" : "AP1",
@@ -169,20 +170,29 @@ const Mainplot = (props) => {
         {/* <StyledTypography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, maxHeight: titleHeight }}>
           Number of Devices
         </StyledTypography> */}
-        {/* <TimeNumDevGroup
-          data={processDevNumDevGroupData(data[0]["throughput"])}
-          width={rightGridInnerWidth}
-          height={mainHeight-titleHeight-2*padding}
-          plotMargin={plotMargin}
-          titleHeight={titleHeight}
-        /> */}
-        <TimeTputWithFairness
+        {graphNumber===1?
+          <TimeTputWithFairness
           data={processTimeTputWithFairnessData(data)}
           width={rightGridInnerWidth}
           height={mainHeight-titleHeight-2*padding}
           plotMargin={plotMargin}
           titleHeight={titleHeight}
+        />: graphNumber===2?
+        <TimeNumDevGroup
+          data={processDevNumDevGroupData(data[0]["throughput"])}
+          width={rightGridInnerWidth}
+          height={mainHeight-titleHeight-2*padding}
+          plotMargin={plotMargin}
+          titleHeight={titleHeight}
+        />:
+        <TimeNumPktWithPdr 
+          data={processDevNumDevGroupData(data[0]["throughput"])}
+          width={rightGridInnerWidth}
+          height={mainHeight-titleHeight-2*padding}
+          plotMargin={plotMargin}
+          titleHeight={titleHeight}
         />
+        }
       </Grid>
 		</Grid>
 	)
