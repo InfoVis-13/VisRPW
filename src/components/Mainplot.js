@@ -55,6 +55,8 @@ const Mainplot = (props) => {
         "txPackets": preprocessData(numTxPktAP2),
       }
     ];
+  console.log(data);
+  console.log(parseFloat("-1.000"));
 
  
   const smainPlot = useRef(null);   
@@ -168,20 +170,20 @@ const Mainplot = (props) => {
         {/* <StyledTypography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, maxHeight: titleHeight }}>
           Number of Devices
         </StyledTypography> */}
-        {/* <TimeNumDevGroup
-          data={processDevNumDevGroupData(data[0])}
-          width={rightGridInnerWidth}
-          height={mainHeight-titleHeight*2-2*padding}
-          plotMargin={plotMargin}
-          titleHeight={titleHeight}
-        /> */}
-        <TimeTputWithFairness
-          data={processTimeTputWithFairnessData(data)}
+        <TimeNumDevGroup
+          data={processDevNumDevGroupData(data[0]["throughput"])}
           width={rightGridInnerWidth}
           height={mainHeight-titleHeight-2*padding}
           plotMargin={plotMargin}
           titleHeight={titleHeight}
         />
+        {/* <TimeTputWithFairness
+          data={processTimeTputWithFairnessData(data)}
+          width={rightGridInnerWidth}
+          height={mainHeight-titleHeight-2*padding}
+          plotMargin={plotMargin}
+          titleHeight={titleHeight}
+        /> */}
       </Grid>
 		</Grid>
 	)

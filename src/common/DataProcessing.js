@@ -3,12 +3,10 @@ import { criteria, labels } from './Constants.js';
 export function preprocessData(data) {
     return data.map(d => {
         const number = parseInt(d.number);
-        let cnt = 0;
-        for (let i=1; ;i++) {
+        let i = 1;
+        while(d.hasOwnProperty(`sta${i}`)){
             d[`sta${i}`] = parseFloat(d[`sta${i}`]);
-            if (d[`sta${i}`] === -1.0) continue;
-            cnt++;
-            if (cnt === number) break;
+            i++;
         }
         return{
             ...d, 
@@ -23,7 +21,6 @@ export function preprocessData(data) {
 
 export function processTimeTputWithFairnessData(data) {
     let statsData = [];
-    console.log(Object.keys(data));
     for (var idx in data){
         const key = data[idx]["key"];
         let tmp = data[idx]["throughput"].map(d => {
@@ -31,8 +28,8 @@ export function processTimeTputWithFairnessData(data) {
             let squareSum = 0;
             let cnt = 0;
             for (let i=1; ;i++) {
-                if (d[`sta${i}`] === -1.0) continue;
                 d[`sta${i}`] = parseFloat(d[`sta${i}`]);
+                if (d[`sta${i}`] === -1.0) continue;
                 sum += d[`sta${i}`];
                 squareSum += d[`sta${i}`]*d[`sta${i}`];
                 cnt++;
@@ -54,7 +51,7 @@ export function processTimeTputWithFairnessData(data) {
 
 export function processDevNumDevGroupData(data) {
     let statsData = [];
-
+    console.log(data);
     for(let i=0; i<data.length; i++) {
         let d = data[i];
         let eachData = {
@@ -75,6 +72,7 @@ export function processDevNumDevGroupData(data) {
             cnt++;
             if (cnt === d.number) break;
         }
+        console.log(eachData);
         for (let j=0; j<labels.length; j++) {
         statsData.push({
             "time": d.time,

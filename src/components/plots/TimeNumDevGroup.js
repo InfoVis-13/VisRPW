@@ -10,43 +10,14 @@ const TimeNumDevGroup = (props) => {
     const width = props.width;
     const height = props.height;
     const plotMargin = props.plotMargin;
+    const titleHeight = props.titleHeight;
 
     const plotWidth = width-2*plotMargin;
-    const plotHeight = height-3*plotMargin;   
+    const plotHeight = height-3*plotMargin-titleHeight; 
+    const marginTop = 2*plotMargin+props.titleHeight;   
 
     useEffect(() => {
         const plotSvg = d3.select(plot.current);
-        let statsData = [];
-
-        for(let i=0; i<data.length; i++) {
-            let d = data[i];
-            let eachData = {
-                "veryGood": 0,
-                "good" : 0,
-                "normal": 0,
-                "poor" : 0,
-                "veryPoor" : 0
-            };
-            let cnt = 0;
-            for(let j=0; ; j++){
-                if (d[`sta${j+1}`] === -1.0) continue;
-                let labIdx = 0;
-                for(labIdx; labIdx<criteria.length; labIdx++){
-                    if(d[`sta${j+1}`] <= criteria[labIdx]) break;
-                }
-                eachData[labels[labIdx]]++;
-                cnt++;
-                if (cnt === d.number) break;
-            }
-            for (let j=0; j<labels.length; j++) {
-            statsData.push({
-                "time": d.time,
-                "number": d.number,
-                "label": labels[j],
-                "count": eachData[labels[j]]
-            });
-            }
-        }
             
         // statsData.filter(d => ((d.time >= timethreshold[0]) && (d.time <= timethreshold[1])));
         // console.log(statsData);
@@ -55,14 +26,14 @@ const TimeNumDevGroup = (props) => {
 
         // Determine the series that need to be stacked.
         const series = d3.stack()
-            .keys(d3.union(statsData.map(d => d.label))) // distinct series keys, in input order
+            .keys(d3.union(data.map(d => d.label))) // distinct series keys, in input order
             .value(([, D], key) => D.get(key).count) // get value for each series key and stack
-        (d3.index(statsData, d => d.time, d => d.label)); // group by stack then series key
+        (d3.index(data, d => d.time, d => d.label)); // group by stack then series key
         // console.log("series", series);
 
         // Prepare the scales for positional and color encodings.
         const x = d3.scaleBand()
-            .domain(d3.groupSort(statsData, D => d3.sum(D, d => d.time), d => d.time))
+            .domain(d3.groupSort(data, D => d3.sum(D, d => d.time), d => d.time))
             // .domain(d3.groupSort(statsData, d => d.time))
             .range([0, plotWidth])
             .padding(0.1);
@@ -100,26 +71,26 @@ const TimeNumDevGroup = (props) => {
         // console.log("color", color);
 
         const xAxisScale = d3.scaleLinear()
-            .domain([ d3.min(statsData, d => d.time), d3.max(statsData, d => d.time) ])
+            .domain([ d3.min(data, d => d.time), d3.max(data, d => d.time) ])
             .range([0, plotWidth]);
-        let xAxis = d3.axisBottom().scale(xAxisScale).ticks(data.length/2).tickSizeOuter(0);
+        let xAxis = d3.axisBottom().scale(xAxisScale).ticks(30).tickSizeOuter(0);
         let yAxis = d3.axisLeft().scale(y).ticks(plotHeight / 80);
 
         // Append the horizontal axis atop the area.
-        plotSvg.append("g").attr("class", "x axis")
-            .attr("transform", `translate(${plotMargin}, ${plotHeight + plotMargin*2})`)
+        plotSvg.append("g").attr("class", "x axis timenumdevgroup")
+            .attr("transform", `translate(${plotMargin}, ${plotHeight + marginTop})`)
             .call(xAxis);
         
         // Add the y-axis, remove the domain line, add grid lines and a label.
         plotSvg.append("g").attr("class", "y axis").call(yAxis)
-            .attr("transform", `translate(${plotMargin}, ${plotMargin*2})`)
+            .attr("transform", `translate(${plotMargin}, ${marginTop})`)
             .call(g => g.select(".domain").remove())
             .call(g => g.selectAll(".tick line").clone()
                 .attr("x2", plotWidth)
                 .attr("stroke-opacity", 0.1));
         
         // Rotate the x-axis labels.
-        plotSvg.selectAll(".x.axis text")
+        plotSvg.selectAll(".x.axis.timenumdevgroup text")
         .attr("transform", function(d) {
                 return "translate(" + this.getBBox().height * -1 + "," + this.getBBox().height*0.5 + ")rotate(-20)";
             });
@@ -143,7 +114,7 @@ const TimeNumDevGroup = (props) => {
 
         // Append a group for each series, and a rect for each element in the series.
         plotSvg.append("g")
-            .attr("transform", `translate(${plotMargin}, ${plotMargin*2})`)
+            .attr("transform", `translate(${plotMargin}, ${marginTop})`)
             .selectAll()
             .data(series)
             .join("g")
