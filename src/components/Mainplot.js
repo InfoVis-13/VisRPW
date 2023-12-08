@@ -39,6 +39,7 @@ const Mainplot = (props) => {
   const mainHeight = entireHeight-2*padding;
 
   const [numAps , setNumAps] = useState(2);
+  const [graphNumber, setGraphNumber] = useState(1);
   const data = [
       {
         "key" : "AP1",
@@ -55,8 +56,6 @@ const Mainplot = (props) => {
         "txPackets": preprocessData(numTxPktAP2),
       }
     ];
-  console.log(data);
-  console.log(parseFloat("-1.000"));
 
  
   const smainPlot = useRef(null);   
@@ -166,7 +165,7 @@ const Mainplot = (props) => {
         </Stack>
       </Grid>
       <Grid item xs={8} sx={{ ...componentStyles, height: mainHeight, p: `${padding}px`}}>
-        <ControlPanel height={titleHeight}/>
+        <ControlPanel graphNumber={graphNumber} height={titleHeight}/>
         {/* <StyledTypography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, maxHeight: titleHeight }}>
           Number of Devices
         </StyledTypography> */}

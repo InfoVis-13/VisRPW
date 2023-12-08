@@ -45,7 +45,6 @@ export const StyledTypography = withStyles({
     root: {
         fontFamily: "Pretendard",
         fontSize: (props) => {
-            console.log(window.innerWidth);
             if (props.variant === "h6") return window.innerWidth>=1200? 22: (window.innerWidth>=600? 22: 18); //21
             else if (props.variant === "subtitle1") return window.innerWidth>1200? 19: (window.innerWidth >= 600? 18 : 16); //18
             else return window.innerWidth>=1200? 17: (window.innerWidth >= 600? 15 : 14); //16
