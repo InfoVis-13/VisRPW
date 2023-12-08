@@ -95,14 +95,14 @@ const GraphPlot = (props) => {
         let xScale = d3.scaleLinear()
                         .domain([
                             d3.min(data, d => d.time),
-                            d3.max(data, d => d.time)+timeGap
+                            d3.max(data, d => d.time)+timeGap-1
                         ])
                         .range([0, plotWidth]);
 
         let yScale = d3.scaleLinear()
                       .domain([
                           0,
-                          d3.max(data, d => d.number)
+                          d3.max(data, d => d.number)+3
                       ])
                       .range([plotHeight, 0]);
         let xAxis = d3.axisBottom().scale(xScale);
@@ -131,15 +131,22 @@ const GraphPlot = (props) => {
             .attr("transform", `translate(${margin}, ${margin})`)
             .attr("fill", "none")
             .attr("stroke", "black")
+            .attr("stroke-width", 1.5)
             .attr("d", lineLeft(data));
 
         numDevSvg.append("g")
             .attr("transform", `translate(${margin}, ${plotHeight + margin})`)
-            .call(xAxis);
+            .call(xAxis)
+            .call(g => g.selectAll(".tick line").clone()
+                .attr("y2", -plotHeight)
+                .attr("stroke-opacity", 0.1));
 
         numDevSvg.append("g")
             .attr("transform", `translate(${margin}, ${margin})`)
-            .call(yAxis);
+            .call(yAxis)
+            .call(g => g.selectAll(".tick line").clone()
+                .attr("x2", plotWidth)
+                .attr("stroke-opacity", 0.1));
 
         let tputYScale = d3.scaleLinear()
                         .domain([
@@ -188,7 +195,7 @@ const GraphPlot = (props) => {
 	return (
     <div style={{ ...componentStyles, padding: `${padding}px`, borderRadius: 10}}>
         <StyledTypography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, maxHeight: titleHeight }}>
-            The number of Devices
+            Number of Devices
         </StyledTypography>
         <svg ref={numDevPlot} width={width} height={height}/>
     </div>

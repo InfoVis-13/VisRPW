@@ -1,20 +1,28 @@
 import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 import Grid from '@mui/material/Grid';
+import Stack from '@mui/material/Stack';
 
 import GraphPlot from './GraphPlot.js';
 import SummaryAP from "./SummaryAP.js";
-import SummaryDev from "./SummaryDev.js";
 import ControlPanel from "./ControlPanel.js";
 import TotalSummary from "./TotalSummary.js";
 import { componentStyles, StyledTypography } from "../common/StyledComponents.js";
 
 import apdata from "../data/ap1_dummy.json";
+import configAP1 from "../data/config_ap1.json";
+import configAP2 from "../data/config_ap2.json";
 import throughputAP1 from "../data/throughput_ap1.json";
 import throughputAP2 from "../data/throughput_ap2.json";
+import pdrAP1 from "../data/pdr_ap1.json";
+import pdrAP2 from "../data/pdr_ap2.json";
+import numTxPktAP1 from "../data/tx_packets_ap1.json";
+import numTxPktAP2 from "../data/tx_packets_ap2.json";
+
 import DataContext from './DataContext.js';
+import { dataProcessing } from './dataProcessing.js';
 import TimeNumDevGroup from "./plots/TimeNumDevGroup.js";
-import { Stack } from "@mui/material";
+import TimeTputWithFairness from "./plots/TimeTputWithFairness.js";
 
 const Mainplot = (props) => {
   const dataContext = React.useContext(DataContext);
@@ -29,33 +37,23 @@ const Mainplot = (props) => {
   const leftSubGridInnerHeight = (entireHeight-7.5*padding)/2;
   const plotMargin = 30;
   const mainHeight = entireHeight-2*padding;
-  // const ControlWidth = APWidth;
-  // const ControlHeight = mainHeight;
 
   const [numAps , setNumAps] = useState(2);
- 
-  const data = throughputAP1.map(d => {
-    const number = parseInt(d.number);
-    let sum = 0;
-    let squareSum = 0;
-    let cnt = 0;
-    for (let i=1; ;i++) {
-      if (d[`sta${i}`] === -1.0) continue;
-      d[`sta${i}`] = parseFloat(d[`sta${i}`]);
-      sum += d[`sta${i}`];
-      squareSum += d[`sta${i}`]*d[`sta${i}`];
-      cnt++;
-      if (cnt === number) break;
-    }
-    return{
-      ...d, 
-      "time": parseFloat(d.time),
-      "section": parseInt(d.section), 
-      "number": number,
-      "fairness": (sum*sum)/(cnt*squareSum),
-      "total": parseFloat(d.total)
-    }
-  });
+  const data = {
+      "AP1": {
+        "config": configAP1,
+        "throughput": dataProcessing(throughputAP1),
+        "pdr": dataProcessing(pdrAP1),
+        "txPackets": dataProcessing(numTxPktAP1),
+      },
+      "AP2": {
+        "config": configAP2,
+        "throughput": dataProcessing(throughputAP2),
+        "pdr": dataProcessing(pdrAP2),
+        "txPackets": dataProcessing(numTxPktAP2),
+      }
+    };
+
   console.log(data);
  
   const smainPlot = useRef(null);   
@@ -165,13 +163,20 @@ const Mainplot = (props) => {
         </Stack>
       </Grid>
       <Grid item xs={8} sx={{ ...componentStyles, height: mainHeight, p: `${padding}px`}}>
-        <StyledTypography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, maxHeight: titleHeight, backgroundColor: "rgba(0,0,0,0)" }}>
-          The number of Devices
+        <ControlPanel height={titleHeight}/>
+        <StyledTypography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, maxHeight: titleHeight }}>
+          Number of Devices
         </StyledTypography>
-        <TimeNumDevGroup
+        {/* <TimeNumDevGroup
           data={data}
           width={rightGridInnerWidth}
-          height={mainHeight-titleHeight-2*padding}
+          height={mainHeight-titleHeight*2-2*padding}
+          plotMargin={plotMargin}
+        /> */}
+        <TimeTputWithFairness
+          data={data}
+          width={rightGridInnerWidth}
+          height={mainHeight-titleHeight*2-2*padding}
           plotMargin={plotMargin}
         />
       </Grid>

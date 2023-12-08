@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 
-import { criteria, labels, color } from "../../common/Constants";
+import { criteria, labels, devGroupcolor } from "../../common/Constants";
 
 const TimeNumDevGroup = (props) => {
     const data = props.data;
@@ -147,7 +147,7 @@ const TimeNumDevGroup = (props) => {
             .selectAll()
             .data(series)
             .join("g")
-            .attr("fill", d => color(d.key))
+            .attr("fill", d => devGroupcolor(d.key))
             .selectAll("rect")
             .data(D => D.map(d => (d.key = D.key, d)))
             .join("rect")
@@ -186,7 +186,7 @@ const TimeNumDevGroup = (props) => {
             // .attr("y", 20)
             .attr("width", 50)
             .attr("height", 10)
-            .attr("fill", (d,i)=>color(d))
+            .attr("fill", (d,i)=>devGroupcolor(d))
             .attr("stroke", "gray")
             .attr("stroke-opacity", 0.3);
         

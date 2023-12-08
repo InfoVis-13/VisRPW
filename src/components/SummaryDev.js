@@ -4,7 +4,7 @@ import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { StyledAccordionSummary, StyledTypography, componentStyles } from "../common/StyledComponents";
-import { criteria, labels, color } from "../common/Constants";
+import { criteria, labels, devGroupcolor } from "../common/Constants";
 
 const SummaryDev = (props) => {
     
@@ -73,7 +73,7 @@ const SummaryDev = (props) => {
             .attr("y",(d,i)=> 20*i+7)
             .attr("height", 17)
             .attr("width", 17)
-            .attr("fill", (d,i)=>color(d.name))
+            .attr("fill", (d,i)=>devGroupcolor(d.name))
             .attr("stroke", "gray")
             .attr("stroke-opacity", 0.2);
 

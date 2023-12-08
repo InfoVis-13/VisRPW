@@ -23,7 +23,18 @@ function App() {
           >
             <MenuIcon />
           </IconButton> */}
-          <Typography variant="h6" component="div" sx={{ marginLeft: 2, fontSize: "2rem", lineHeight: 2.5, height: '80px' }}>
+          <Typography 
+            variant="h1" 
+            component="div" 
+            sx={{ 
+              marginLeft: 2, 
+              fontSize: "2rem", 
+              lineHeight: 2.5, 
+              height: '80px', 
+              fontFamily: 'Pretendard',
+              fontWeight:'600' 
+            }
+          }>
             VisRPW
           </Typography>
         </Toolbar>
