@@ -14,12 +14,11 @@ const ControlPanel = (props) => {
     }, []);
 
 	return (
-    <Stack direction="row" justifyContent={"end"}  spacing={1} sx={{ height:props.height }}>
+    <Stack direction="row" justifyContent={"start"}  spacing={1} sx={{ height:props.height }}>
         <Button variant="contained" size="small" >Throughput</Button>
         <Button variant="outlined" size="small">Fairness</Button>
-        <Button variant="outlined" size="small">Number of Packets Transmitted</Button>
-        <Button variant="outlined" size="small">Packet Delivery Ratio</Button>
-        <Button variant="outlined" size="small" disabled>Channel Interference</Button>
+        <Button variant="outlined" size="small" disabled>Number of Packets Transmitted</Button>
+        <Button variant="outlined" size="small" disabled>Packet Delivery Ratio</Button>
         {/* <Chip label="Total Throughput" color="primary" sx={{fontSize: 14}}/>
         <Chip label="The number of Devices" color="primary" sx={{fontSize: 14}}/> */}
     </Stack>

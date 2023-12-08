@@ -62,10 +62,14 @@ const GraphPlot = (props) => {
                         .selectAll()
                         .data(d3.group(data, d => d.key))
                         .join("g");
-        console.log(data);
-        console.log(d3.group(data, d => d.key));
-        const x = d3.scaleUtc()
-                    .domain(d3.extent(data, d => d.time))
+        // const x = d3.scaleUtc()
+        //             .domain(d3.extent(data, d => d.time))
+        //             .range([0, plotWidth]);
+        const x = d3.scaleLinear()
+                    .domain([
+                        d3.min(data, d => d.time),
+                        d3.max(data, d => d.time)
+                    ])
                     .range([0, plotWidth]);
         const y = d3.scaleLinear()
                     .domain([

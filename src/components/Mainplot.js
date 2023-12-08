@@ -20,7 +20,7 @@ import numTxPktAP1 from "../data/tx_packets_ap1.json";
 import numTxPktAP2 from "../data/tx_packets_ap2.json";
 
 import DataContext from './DataContext.js';
-import { preprocessData, processTimeTputWithFairnessData } from '../common/DataProcessing.js';
+import { preprocessData, processDevNumDevGroupData, processTimeTputWithFairnessData } from '../common/DataProcessing.js';
 import TimeNumDevGroup from "./plots/TimeNumDevGroup.js";
 import TimeTputWithFairness from "./plots/TimeTputWithFairness.js";
 
@@ -56,7 +56,6 @@ const Mainplot = (props) => {
       }
     ];
 
-  console.log(data);
  
   const smainPlot = useRef(null);   
   const [timethreshold, settimeshow] = useState([-1,999999]);
@@ -166,20 +165,22 @@ const Mainplot = (props) => {
       </Grid>
       <Grid item xs={8} sx={{ ...componentStyles, height: mainHeight, p: `${padding}px`}}>
         <ControlPanel height={titleHeight}/>
-        <StyledTypography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, maxHeight: titleHeight }}>
+        {/* <StyledTypography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, maxHeight: titleHeight }}>
           Number of Devices
-        </StyledTypography>
+        </StyledTypography> */}
         {/* <TimeNumDevGroup
-          data={data}
+          data={processDevNumDevGroupData(data[0])}
           width={rightGridInnerWidth}
           height={mainHeight-titleHeight*2-2*padding}
           plotMargin={plotMargin}
+          titleHeight={titleHeight}
         /> */}
         <TimeTputWithFairness
           data={processTimeTputWithFairnessData(data)}
           width={rightGridInnerWidth}
-          height={mainHeight-titleHeight*2-2*padding}
+          height={mainHeight-titleHeight-2*padding}
           plotMargin={plotMargin}
+          titleHeight={titleHeight}
         />
       </Grid>
 		</Grid>

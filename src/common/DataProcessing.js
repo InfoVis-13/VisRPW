@@ -49,7 +49,6 @@ export function processTimeTputWithFairnessData(data) {
         });
         statsData = statsData.concat(tmp);
     }
-    console.log(statsData);
     return statsData;
 }
 

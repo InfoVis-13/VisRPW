@@ -14,6 +14,6 @@ export const devGroupcolor = d3.scaleOrdinal()
         .range(devColorRange)
         .unknown("#ccc");
 
-export const apColor = [["MediumBlue", "darkorange"],
-                        ["cornflowerblue", "sandybrown"],
+export const apColor = [["MediumBlue", "orangered"],
+                        ["cornflowerblue", "orange"],
                         ["skyblue", "lightsalmon"]];
