@@ -20,7 +20,7 @@ import numTxPktAP1 from "../data/tx_packets_ap1.json";
 import numTxPktAP2 from "../data/tx_packets_ap2.json";
 
 import DataContext from './DataContext.js';
-import { dataProcessing } from './dataProcessing.js';
+import { preprocessData, processTimeTputWithFairnessData } from '../common/DataProcessing.js';
 import TimeNumDevGroup from "./plots/TimeNumDevGroup.js";
 import TimeTputWithFairness from "./plots/TimeTputWithFairness.js";
 
@@ -39,20 +39,22 @@ const Mainplot = (props) => {
   const mainHeight = entireHeight-2*padding;
 
   const [numAps , setNumAps] = useState(2);
-  const data = {
-      "AP1": {
+  const data = [
+      {
+        "key" : "AP1",
         "config": configAP1,
-        "throughput": dataProcessing(throughputAP1),
-        "pdr": dataProcessing(pdrAP1),
-        "txPackets": dataProcessing(numTxPktAP1),
+        "throughput": preprocessData(throughputAP1),
+        "pdr": preprocessData(pdrAP1),
+        "txPackets": preprocessData(numTxPktAP1),
       },
-      "AP2": {
+      {
+        "key" : "AP2",
         "config": configAP2,
-        "throughput": dataProcessing(throughputAP2),
-        "pdr": dataProcessing(pdrAP2),
-        "txPackets": dataProcessing(numTxPktAP2),
+        "throughput": preprocessData(throughputAP2),
+        "pdr": preprocessData(pdrAP2),
+        "txPackets": preprocessData(numTxPktAP2),
       }
-    };
+    ];
 
   console.log(data);
  
@@ -158,7 +160,7 @@ const Mainplot = (props) => {
           <Stack direction="row" spacing={`${padding}px`} useFlexGap flexWrap="wrap">
             <TotalSummary width={leftGridInnerWidth/2} height={leftSubGridInnerHeight} margin={plotMargin} padding={padding}/>
             <SummaryAP width={leftGridInnerWidth/2} height={leftSubGridInnerHeight} margin={plotMargin} padding={padding}/>
-            <GraphPlot data={data} width={leftGridInnerWidth} height={leftSubGridInnerHeight} margin={plotMargin} titleHeight={titleHeight}/>
+            <GraphPlot data={processTimeTputWithFairnessData(data)} width={leftGridInnerWidth} height={leftSubGridInnerHeight} margin={plotMargin} titleHeight={titleHeight}/>
           </Stack>
         </Stack>
       </Grid>
@@ -174,7 +176,7 @@ const Mainplot = (props) => {
           plotMargin={plotMargin}
         /> */}
         <TimeTputWithFairness
-          data={data}
+          data={processTimeTputWithFairnessData(data)}
           width={rightGridInnerWidth}
           height={mainHeight-titleHeight*2-2*padding}
           plotMargin={plotMargin}

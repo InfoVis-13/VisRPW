@@ -16,18 +16,10 @@ const TimeTputWithFairness = (props) => {
     const color = d3.schemeAccent;
 
     useEffect(() => {
+        console.log(data);
         const plotSvg = d3.select(plot.current);
-
-        let statsData = data.map(d => {
-            return {
-                "time": d.time,
-                "number": d.number,
-                "total": d.total,
-                "avg": d.total/d.number,
-            };
-        });
-
         const timeGap = data[1].time-data[0].time;
+
         let xScale = d3.scaleLinear()
                         .domain([
                             d3.min(data, d => d.time),
@@ -66,13 +58,13 @@ const TimeTputWithFairness = (props) => {
                         .x(d => xScale(d.time))
                         .y(d => tputYScale(d.value))
                         .curve(d3.curveLinear);
-        
-                        // Append number of devices line
-        const barWidth = (xScale(statsData[1].time)-xScale(statsData[0].time))/2;
+
+        // Append number of devices line
+        const barWidth = (xScale(data[1].time)-xScale(data[0].time))/2;
         plotSvg.append("g")
                 .attr("transform", `translate(${plotMargin}, ${plotMargin})`)
                 .selectAll("rect")
-                .data(statsData)
+                .data(data)
                 .join("rect")
                 .attr("x", d => xScale(d.time)-barWidth/2)
                 // .attr("y", 1)
@@ -89,7 +81,7 @@ const TimeTputWithFairness = (props) => {
                 .attr("fill", "none")
                 .attr("stroke", "steelblue")
                 .attr("stroke-width", 3)
-                .attr("d", line(statsData.map(d => {
+                .attr("d", line(data.map(d => {
                     return {
                         "time": d.time,
                         "value": d.total
@@ -102,7 +94,7 @@ const TimeTputWithFairness = (props) => {
                 .attr("fill", "none")
                 .attr("stroke", "blue")
                 .attr("stroke-width", 3)
-                .attr("d", line(statsData.map(d => {
+                .attr("d", line(data.map(d => {
                     return {
                         "time": d.time,
                         "value": d.avg
