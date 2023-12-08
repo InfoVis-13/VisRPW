@@ -22,16 +22,19 @@ export const StyledAccordionSummary = withStyles({
         minHeight: 30,
         maxHeight: 30,
         marginTop: 5,
+        backgroundColor: "#ebebeb",
         '&.Mui-expanded': {
-          minHeight: 30,
-          maxHeight: 30,
+            minHeight: 30,
+            maxHeight: 30,
         }
     },
     content: {
         margin: 0,
         '&.Mui-expanded': {
-          margin: 0
-        }
+            margin: 0,
+            backgroundColor: "#ebebeb",
+            borderRadius: 10,
+            }
     },
     expandIcon: {
         order: -1
@@ -42,12 +45,17 @@ export const StyledTypography = withStyles({
     root: {
         fontFamily: "Pretendard",
         fontSize: (props) => {
-            if (props.variant === "h6") return 21;
-            else if (props.variant === "subtitle1") return 18;
-            else return 16;
+            console.log(window.innerWidth);
+            if (props.variant === "h6") return window.innerWidth>=1200? 22: (window.innerWidth>=600? 22: 18); //21
+            else if (props.variant === "subtitle1") return window.innerWidth>1200? 19: (window.innerWidth >= 600? 18 : 16); //18
+            else return window.innerWidth>=1200? 17: (window.innerWidth >= 600? 15 : 14); //16
+
+            // if (props.variant === "h6") return "2.5vh"; //21
+            // else if (props.variant === "subtitle1") return "2.2vh"; //18
+            // else return "1.8vh"; //16
         },
         fontWeight: (props) => {
-            if (props.variant === "h6") return "600";
+            if (props.variant === "h6") return "500";
             else return "normal";
         },
         flexGrow: 1,
@@ -58,9 +66,9 @@ export const StyledTypography = withStyles({
 
 export const componentStyles = {
     fontFamily: "Pretendard",
-    borderRadius: 4, 
+    borderRadius: 3, 
     // border:"1px solid #474452", 
     boxShadow: "0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 10px 0px rgba(0,0,0,0.2), 0px 1px 10px 0px rgba(0,0,0,0.2)",
-    backgroundColor:"white",
+    backgroundColor: "#ebebeb",
     marginBottom: 2
 };

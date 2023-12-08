@@ -1,61 +1,63 @@
 import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 import Grid from '@mui/material/Grid';
+import Stack from '@mui/material/Stack';
 
 import GraphPlot from './GraphPlot.js';
 import SummaryAP from "./SummaryAP.js";
-import SummaryDev from "./SummaryDev.js";
 import ControlPanel from "./ControlPanel.js";
 import TotalSummary from "./TotalSummary.js";
 import { componentStyles, StyledTypography } from "../common/StyledComponents.js";
 
 import apdata from "../data/ap1_dummy.json";
+import configAP1 from "../data/config_ap1.json";
+import configAP2 from "../data/config_ap2.json";
 import throughputAP1 from "../data/throughput_ap1.json";
 import throughputAP2 from "../data/throughput_ap2.json";
+import pdrAP1 from "../data/pdr_ap1.json";
+import pdrAP2 from "../data/pdr_ap2.json";
+import numTxPktAP1 from "../data/tx_packets_ap1.json";
+import numTxPktAP2 from "../data/tx_packets_ap2.json";
+
 import DataContext from './DataContext.js';
+import { preprocessData, processDevNumDevGroupData, processTimeTputWithFairnessData } from '../common/DataProcessing.js';
 import TimeNumDevGroup from "./plots/TimeNumDevGroup.js";
+import TimeTputWithFairness from "./plots/TimeTputWithFairness.js";
 
 const Mainplot = (props) => {
   const dataContext = React.useContext(DataContext);
 
+  const paddingW = window.innerWidth*0.015;
   const padding = 15;
+  const entireWidth = window.innerWidth*0.97;
+  const entireHeight = window.innerHeight-90;
+  const leftGridInnerWidth = entireWidth*0.33-2*padding;
+  const rightGridInnerWidth = entireWidth*0.66-2*padding; 
   const titleHeight = 35;
-  const interComponentMargin = (window.innerWidth*0.88)*0.01;
+  const leftSubGridInnerHeight = (entireHeight-7.5*padding)/2;
   const plotMargin = 30;
-  const graphWidth = window.innerWidth*0.84;
-  const graphHeight = window.innerHeight*0.35;
-  const mainWidth = (window.innerWidth*0.84)*0.78;
-  const mainHeight = window.innerHeight*0.95;
-  const APWidth = (window.innerWidth*0.84)*0.2;
-  const APHeight = (mainHeight-2*plotMargin)/2-padding/2;
-  // const ControlWidth = APWidth;
-  // const ControlHeight = mainHeight;
+  const mainHeight = entireHeight-2*padding;
 
   const [numAps , setNumAps] = useState(2);
- 
-  const data = throughputAP1.map(d => {
-    const number = parseInt(d.number);
-    let sum = 0;
-    let squareSum = 0;
-    let cnt = 0;
-    for (let i=1; ;i++) {
-      if (d[`sta${i}`] === -1.0) continue;
-      d[`sta${i}`] = parseFloat(d[`sta${i}`]);
-      sum += d[`sta${i}`];
-      squareSum += d[`sta${i}`]*d[`sta${i}`];
-      cnt++;
-      if (cnt === number) break;
-    }
-    return{
-      ...d, 
-      "time": parseFloat(d.time),
-      "section": parseInt(d.section), 
-      "number": number,
-      "fairness": (sum*sum)/(cnt*squareSum),
-      "total": parseFloat(d.total)
-    }
-  });
+  const data = [
+      {
+        "key" : "AP1",
+        "config": configAP1,
+        "throughput": preprocessData(throughputAP1),
+        "pdr": preprocessData(pdrAP1),
+        "txPackets": preprocessData(numTxPktAP1),
+      },
+      {
+        "key" : "AP2",
+        "config": configAP2,
+        "throughput": preprocessData(throughputAP2),
+        "pdr": preprocessData(pdrAP2),
+        "txPackets": preprocessData(numTxPktAP2),
+      }
+    ];
   console.log(data);
+  console.log(parseFloat("-1.000"));
+
  
   const smainPlot = useRef(null);   
   const [timethreshold, settimeshow] = useState([-1,999999]);
@@ -153,32 +155,35 @@ const Mainplot = (props) => {
 	}, [timethreshold]);
  
 	return (
-		<Grid container sx={{width: "100%", pt: "4%", pb: "4%", pl: "8%", pr: "8%"}}>
-      <Grid item xs={12} sx={componentStyles}>
-        <GraphPlot data={data} width={graphWidth} height={graphHeight} margin={plotMargin} titleHeight={titleHeight}/>
+		<Grid container sx={{width: "100%", pt: '20px', pl: `${paddingW}px`, pr: `${paddingW}px`}}>
+      <Grid item xs={4}>
+        <Stack spacing={`${padding}px`}>
+          <Stack direction="row" spacing={`${padding}px`} useFlexGap flexWrap="wrap">
+            <TotalSummary width={leftGridInnerWidth/2} height={leftSubGridInnerHeight} margin={plotMargin} padding={padding}/>
+            <SummaryAP width={leftGridInnerWidth/2} height={leftSubGridInnerHeight} margin={plotMargin} padding={padding}/>
+            <GraphPlot data={processTimeTputWithFairnessData(data)} width={leftGridInnerWidth} height={leftSubGridInnerHeight} margin={plotMargin} titleHeight={titleHeight}/>
+          </Stack>
+        </Stack>
       </Grid>
-      <Grid item xs={2.5} sx={{ display:"flex", flexDirection:"column", mr: `${interComponentMargin}px`}}>
-        <SummaryAP width={APWidth} height={APHeight} margin={plotMargin} padding={padding}/>
-        <ControlPanel width={APWidth} height={APHeight} margin={plotMargin} padding={padding}/>
-        {/* <SummaryDev apdata={data} width={APWidth} height={APHeight} margin={plotMargin} padding={mainPadding}/> */}
-      </Grid>
-      <Grid item xs={9.36} sx={{ ...componentStyles, height: mainHeight, p: `${padding}px`}}>
-        <StyledTypography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, maxHeight: titleHeight, backgroundColor: "rgba(0,0,0,0)" }}>
-          The number of Devices
-        </StyledTypography>
-        <TimeNumDevGroup
-          data={data}
-          width={mainWidth-2*padding}
+      <Grid item xs={8} sx={{ ...componentStyles, height: mainHeight, p: `${padding}px`}}>
+        <ControlPanel height={titleHeight}/>
+        {/* <StyledTypography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, maxHeight: titleHeight }}>
+          Number of Devices
+        </StyledTypography> */}
+        {/* <TimeNumDevGroup
+          data={processDevNumDevGroupData(data[0]["throughput"])}
+          width={rightGridInnerWidth}
           height={mainHeight-titleHeight-2*padding}
           plotMargin={plotMargin}
+          titleHeight={titleHeight}
+        /> */}
+        <TimeTputWithFairness
+          data={processTimeTputWithFairnessData(data)}
+          width={rightGridInnerWidth}
+          height={mainHeight-titleHeight-2*padding}
+          plotMargin={plotMargin}
+          titleHeight={titleHeight}
         />
-        {/* <svg ref={smainPlot} width={mainWidth} height={mainHeight}/>  */}
-      </Grid>
-      {/* <Grid item xs={2} sx={{ ...componentStyles, ml: `${interComponentMargin}px`, height: ControlHeight, padding: `${mainPadding}px`}}>
-        <ControlPanel width={ControlWidth} height={ControlHeight} margin={plotMargin} padding={padding}/>
-      </Grid> */}
-      <Grid item xs={12} sx={componentStyles}>
-        <TotalSummary width={graphWidth} height={50} margin={plotMargin}/>
       </Grid>
 		</Grid>
 	)

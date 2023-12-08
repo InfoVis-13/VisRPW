@@ -18,8 +18,8 @@ function App() {
 
   return (
     <div className="App">
-      <AppBar position="static" sx={{width: "100%", height: 80, backgroundColor: "#060017"}}>
-        <Toolbar>
+      <AppBar position="static" sx={{width: "100%", height: '80px', backgroundColor: "#060017"}}>
+        <Toolbar sx={{ height: '80px'}}>
           {/* <IconButton
             size="large"
             edge="start"
@@ -29,7 +29,18 @@ function App() {
           >
             <MenuIcon />
           </IconButton> */}
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1, marginLeft: 2, fontSize: "2rem", lineHeight: 5 }}>
+          <Typography 
+            variant="h1" 
+            component="div" 
+            sx={{ 
+              marginLeft: 2, 
+              fontSize: "2rem", 
+              lineHeight: 2.5, 
+              height: '80px', 
+              fontFamily: 'Pretendard',
+              fontWeight:'600' 
+            }
+          }>
             VisRPW
           </Typography>
           <input
