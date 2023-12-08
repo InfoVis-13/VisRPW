@@ -7,17 +7,17 @@ const TimeTputWithFairness = (props) => {
 
     const data = props.data;
     const plot = useRef(null);
+    const fairnessPlot = useRef(null);
 
     const width = props.width;
     const height = props.height;
     const plotMargin = props.plotMargin;
     const titleHeight = props.titleHeight;
+    const bottomHeight = titleHeight+plotMargin;
 
     const plotWidth = width-2*plotMargin;
-    const plotHeight = height-3*plotMargin-titleHeight; 
+    const plotHeight = height-4*plotMargin-titleHeight; 
     const marginTop = 2*plotMargin;   
-
-    const color = d3.schemeAccent;
 
     useEffect(() => {
         console.log(data);
@@ -194,11 +194,71 @@ const TimeTputWithFairness = (props) => {
             .attr("height", 3)
             .attr("fill", "black")
             .attr("stroke", "black");
+        
+        const fairnessSvg = d3.select(fairnessPlot.current);
+        const fairnessColor = d3.scaleLinear()
+                                .domain([0, 1])
+                                .range(["red", "white"]);
+                                // .interpolate(d3.interpolateHcl);
+        const fairnessHeight = (bottomHeight-10)/numAps/2;
+        idx = 0;
+        fairnessSvg.append("g")
+            .attr("transform", `translate(${plotMargin}, 5)`)
+            .selectAll("text")
+            .data(["Fairness"])
+            .join("text")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "middle")
+            .attr("font-size", 13)
+            .attr("font-weight", "bold")
+            .text(d => d);
+        for(var key of groupedData.keys()) {
+            fairnessSvg.append("g")
+                .attr("transform", `translate(${plotMargin}, 15)`)
+                .selectAll("rect")
+                .data(groupedData.get(key))
+                .join("rect")
+                .attr("x", d => xScale(d.time)-barWidth/2)
+                .attr("y", idx*(fairnessHeight+fairnessHeight/2))
+                .attr("width", xScale(data[1].time)-xScale(data[0].time))
+                .attr("height", fairnessHeight)
+                .attr("fill", d => fairnessColor(d.fairness))
+                .attr("stroke", d => fairnessColor(d.fairness));
+            fairnessSvg.append("g")
+                .attr("transform", `translate(${plotMargin}, 15)`)
+                .selectAll("rect")
+                .data([1])
+                .join("rect")
+                .attr("x", d => xScale(data[0].time)-barWidth/2)
+                .attr("y", idx*(fairnessHeight+fairnessHeight/2))
+                .attr("width", plotWidth+xScale(data[1].time)-xScale(data[0].time))
+                .attr("height", fairnessHeight)
+                .attr("fill", "none")
+                .attr("stroke", "black")
+                .attr("stroke-width", 0.5);
+            fairnessSvg.append("g")
+                .attr("transform", `translate(${plotMargin-15}, 15)`)
+                .selectAll("text")
+                .data([key])
+                .join("text")
+                .attr("x", 0)
+                .attr("y", idx*(fairnessHeight+fairnessHeight/2)+fairnessHeight/2+1)
+                .attr("text-anchor", "middle")
+                .attr("alignment-baseline", "middle")
+                .attr("font-size", 10)
+                .text(d => d);  
+            idx++;
+        }
 
     });
 
     return (
-        <svg ref={plot} width={width} height={height+props.titleHeight} />
+        <React.Fragment>
+            <svg ref={plot} width={width} height={height-titleHeight-plotMargin} />
+            <svg ref={fairnessPlot} width={width} height={bottomHeight} />
+        </React.Fragment>
     );
 }
 
