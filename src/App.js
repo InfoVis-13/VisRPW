@@ -28,8 +28,8 @@ function App() {
             component="div" 
             sx={{ 
               marginLeft: 2, 
-              fontSize: "2rem", 
-              lineHeight: 2.5, 
+              fontSize: "2.4rem", 
+              lineHeight: 2, 
               height: '80px', 
               fontFamily: 'Pretendard',
               fontWeight:'600' 

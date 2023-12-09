@@ -11,9 +11,9 @@ const GraphPlot = (props) => {
 
     const data = props.data;
     const margin = props.margin;
-    const padding = 10;
+    const padding = props.padding;
     const titleHeight = props.titleHeight;
-    const width = props.width;
+    const width = props.width-2*padding;
     const height = props.height;
     const plotWidth = width-2*margin;
     const plotHeight = height-2*margin;
@@ -117,7 +117,7 @@ const GraphPlot = (props) => {
 
 	return (
     <div style={{ ...componentStyles, padding: `${padding}px`, borderRadius: 10}}>
-        <StyledTypography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, maxHeight: titleHeight }}>
+        <StyledTypography variant="h6" component="div" sx={{ maxHeight: titleHeight }}>
             Number of Devices
         </StyledTypography>
         <svg ref={plot} width={width} height={height}/>

@@ -29,13 +29,13 @@ const Mainplot = (props) => {
   const dataContext = React.useContext(DataContext);
 
   const paddingW = window.innerWidth*0.015;
-  const padding = 15;
+  const padding = 12;
   const entireWidth = window.innerWidth*0.97;
   const entireHeight = window.innerHeight-90;
-  const leftGridInnerWidth = entireWidth*0.33-2*padding;
+  const leftGridInnerWidth = entireWidth*0.33-padding;
   const rightGridInnerWidth = entireWidth*0.66-2*padding; 
   const titleHeight = 35;
-  const leftSubGridInnerHeight = (entireHeight-7.5*padding)/2;
+  const leftSubGridInnerHeight = (entireHeight-8*padding)/2;
   const plotMargin = 30;
   const mainHeight = entireHeight-2*padding;
 
@@ -159,9 +159,9 @@ const Mainplot = (props) => {
       <Grid item xs={4}>
         <Stack spacing={`${padding}px`}>
           <Stack direction="row" spacing={`${padding}px`} useFlexGap flexWrap="wrap">
-            <TotalSummary width={leftGridInnerWidth/2} height={leftSubGridInnerHeight} margin={plotMargin} padding={padding}/>
-            <SummaryAP width={leftGridInnerWidth/2} height={leftSubGridInnerHeight} margin={plotMargin} padding={padding}/>
-            <GraphPlot data={processTimeTputWithFairnessData(data)} width={leftGridInnerWidth} height={leftSubGridInnerHeight} margin={plotMargin} titleHeight={titleHeight}/>
+            <TotalSummary width={(leftGridInnerWidth-padding)/2} height={leftSubGridInnerHeight} margin={plotMargin} padding={padding}/>
+            <SummaryAP width={(leftGridInnerWidth-padding)/2} height={leftSubGridInnerHeight} margin={plotMargin} padding={padding}/>
+            <GraphPlot data={processTimeTputWithFairnessData(data)} width={leftGridInnerWidth} height={leftSubGridInnerHeight} margin={plotMargin} titleHeight={titleHeight} padding={padding}/>
           </Stack>
         </Stack>
       </Grid>
