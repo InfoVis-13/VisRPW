@@ -9,17 +9,19 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import Stack from '@mui/material/Stack';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { StyledTypography, StyledAccordionSummary, StyledAccordion, componentStyles } from "../common/StyledComponents.js";
+import { useSelectedAP } from "../common/DataContext.js";
 
 const SummaryAP = (props) => {
     
     const [numAps , setNumAps] = useState(2);
     const [apConfig, setApConfig] = useState([configAp1, configAp2]);
-    const [expanded, setExpanded] = useState(false);
+    const {selectedAP, setSelectedAP} = useSelectedAP(); // -1: none, 0: AP1, 1: AP2
+    // const [selectedAP, setSelectedAP] = useState(-1);
     const padding = props.padding;
     const sPlot = useRef(null);  
 
     const handleChange = (panel) => (event, isExpanded) => {
-        setExpanded(isExpanded ? panel : false);
+        setSelectedAP(isExpanded ? panel : -1);
     };
 
     const DisplayAPConfig = (i, config) => {
@@ -27,8 +29,8 @@ const SummaryAP = (props) => {
             <StyledAccordion 
                 sx={{ boxShadow:"none" }} 
                 // defaultExpanded={open[i]} 
-                expanded={expanded===`AP${i+1}`}
-                onChange={handleChange(`AP${i+1}`)}
+                expanded={selectedAP===i}
+                onChange={handleChange(i)}
             >
                 <StyledAccordionSummary
                     expandIcon={<ExpandMoreIcon />}
@@ -36,8 +38,8 @@ const SummaryAP = (props) => {
                     id={`AP${i+1}}-header`}
                 >
                     <StyledTypography variant="subtitle1" sx={{
-                        "font-weight":(expanded===`AP${i+1}`)?'600':'400',
-                        "color":(expanded===`AP${i+1}`)?'black':'grey.500',
+                        "font-weight":(selectedAP===i)?'600':'400',
+                        "color":(selectedAP===i || selectedAP===-1)?'black':'grey.500',
                     }}
                     >
                         AP {i+1}

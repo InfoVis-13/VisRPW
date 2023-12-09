@@ -51,8 +51,8 @@ export const StyledTypography = withStyles({
             // else return window.screen.width>=1200? 17: (window.screen.width >= 600? 15 : 14); //16
             
             if (props.variant === "h6") return "1.3vw"; //21
-            else if (props.variant === "subtitle1") return "1.1vw"; //18
-            else return "0.9vw"; //16
+            else if (props.variant === "subtitle1") return "1.15vw"; //18
+            else return "1vw"; //16
         },
         fontWeight: (props) => {
             if (props.variant === "h6") return "500";

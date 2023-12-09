@@ -1,9 +1,9 @@
 import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 
-const TimeNumPktWithPdr = (props) => {
+const TputNumPktWithPdr = (props) => {
 
-    const data = props.data;
+    const data = props.data.value;
     const plot = useRef(null);
 
     const width = props.width;
@@ -23,4 +23,4 @@ const TimeNumPktWithPdr = (props) => {
     );
 }
 
-export default TimeNumPktWithPdr;
+export default TputNumPktWithPdr;

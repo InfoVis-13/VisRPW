@@ -19,14 +19,13 @@ import pdrAP2 from "../data/pdr_ap2.json";
 import numTxPktAP1 from "../data/tx_packets_ap1.json";
 import numTxPktAP2 from "../data/tx_packets_ap2.json";
 
-import DataContext from './DataContext.js';
+import { useSelectedAP, useTimeThreshold } from '../common/DataContext.js';
 import { preprocessData, processDevNumDevGroupData, processTimeTputWithFairnessData } from '../common/DataProcessing.js';
 import TimeNumDevGroup from "./plots/TimeNumDevGroup.js";
 import TimeTputWithFairness from "./plots/TimeTputWithFairness.js";
-import TimeNumPktWithPdr from "./plots/TimeNumPktWithPdr.js";
+import TputNumPktWithPdr from "./plots/TputNumPktWithPdr.js";
 
 const Mainplot = (props) => {
-  const dataContext = React.useContext(DataContext);
 
   const paddingW = window.innerWidth*0.015;
   const padding = 12;
@@ -41,27 +40,29 @@ const Mainplot = (props) => {
 
   const [numAps , setNumAps] = useState(2);
   const [graphNumber, setGraphNumber] = useState(2);
+  const {selectedAP} = useSelectedAP(); // -1: none, 0: AP1, 1: AP2
+  const {timethreshold} = useTimeThreshold();
+  // const [selectedAP, setSelectedAP] = useState(-1);
+  
   const data = [
       {
         "key" : "AP1",
         "config": configAP1,
         "throughput": preprocessData(throughputAP1),
         "pdr": preprocessData(pdrAP1),
-        "txPackets": preprocessData(numTxPktAP1),
+        "numTxPkts": preprocessData(numTxPktAP1),
       },
       {
         "key" : "AP2",
         "config": configAP2,
         "throughput": preprocessData(throughputAP2),
         "pdr": preprocessData(pdrAP2),
-        "txPackets": preprocessData(numTxPktAP2),
+        "numTxPkts": preprocessData(numTxPktAP2),
       }
     ];
 
  
   const smainPlot = useRef(null);   
-  const [timethreshold, settimeshow] = useState([-1,999999]);
-  dataContext.setTimeShow = settimeshow; 
   
   useEffect(() => {
     
@@ -160,8 +161,20 @@ const Mainplot = (props) => {
         <Stack spacing={`${padding}px`}>
           <Stack direction="row" spacing={`${padding}px`} useFlexGap flexWrap="wrap">
             <TotalSummary width={(leftGridInnerWidth-padding)/2} height={leftSubGridInnerHeight} margin={plotMargin} padding={padding}/>
-            <SummaryAP width={(leftGridInnerWidth-padding)/2} height={leftSubGridInnerHeight} margin={plotMargin} padding={padding}/>
-            <GraphPlot data={processTimeTputWithFairnessData(data)} width={leftGridInnerWidth} height={leftSubGridInnerHeight} margin={plotMargin} titleHeight={titleHeight} padding={padding}/>
+            <SummaryAP 
+              width={(leftGridInnerWidth-padding)/2} 
+              height={leftSubGridInnerHeight} 
+              margin={plotMargin} 
+              padding={padding}
+            />
+            <GraphPlot 
+              data={processTimeTputWithFairnessData(data)} 
+              width={leftGridInnerWidth} 
+              height={leftSubGridInnerHeight} 
+              margin={plotMargin} 
+              titleHeight={titleHeight} 
+              padding={padding}
+            />
           </Stack>
         </Stack>
       </Grid>
@@ -179,13 +192,13 @@ const Mainplot = (props) => {
           titleHeight={titleHeight}
         />: graphNumber===2?
         <TimeNumDevGroup
-          data={processDevNumDevGroupData(data[0]["throughput"])}
+          data={processDevNumDevGroupData(data[selectedAP===-1?0:selectedAP]["throughput"])}
           width={rightGridInnerWidth}
           height={mainHeight-titleHeight-2*padding}
           plotMargin={plotMargin}
           titleHeight={titleHeight}
         />:
-        <TimeNumPktWithPdr 
+        <TputNumPktWithPdr 
           data={processDevNumDevGroupData(data[0]["throughput"])}
           width={rightGridInnerWidth}
           height={mainHeight-titleHeight-2*padding}

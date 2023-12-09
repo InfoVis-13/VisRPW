@@ -1,13 +1,11 @@
 import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
-import DataContext from './DataContext.js';
 
 import { StyledTypography, componentStyles } from "../common/StyledComponents.js";
 import { apColor } from "../common/Constants.js";
+import { useTimeThreshold } from "../common/DataContext.js";
 
 const GraphPlot = (props) => {
-
-    const dataContext = React.useContext(DataContext);
 
     const data = props.data;
     const margin = props.margin;
@@ -19,6 +17,7 @@ const GraphPlot = (props) => {
     const plotHeight = height-2*margin;
 
     const plot = useRef(null);
+    const {setTimeShow} = useTimeThreshold();
 
     const brush = d3.brushX()
     .extent([[0, 0], [plotWidth, plotHeight]])
@@ -47,7 +46,7 @@ const GraphPlot = (props) => {
 
             if(datax1 - datax0 > 1)
             {
-            dataContext.setTimeShow([datax0,datax1]) 
+            setTimeShow([datax0,datax1]); 
             }
         }
         brushdoing = false;

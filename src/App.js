@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import Box from '@mui/material/Box';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -6,10 +6,9 @@ import Typography from '@mui/material/Typography';
 import Mainplot from "./components/Mainplot";
 
 import "./App.css";
+import DataProvider from "./common/DataContext";
 
 function App() {
-  const mainref = Mainplot();
-  
   return (
     <div className="App">
       <AppBar position="static" sx={{width: "100%", height: '80px', backgroundColor: "#060017"}}>
@@ -38,10 +37,12 @@ function App() {
             VisRPW
           </Typography>
         </Toolbar>
-      </AppBar>  
-      <div style={{ width: "100%"}}>    
-        <Mainplot />  
-      </div> 
+      </AppBar> 
+      <DataProvider>
+        <div style={{ width: "100%"}}>    
+          <Mainplot /> 
+        </div>
+      </DataProvider>
     </div>
   );
 }
