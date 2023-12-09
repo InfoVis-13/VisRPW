@@ -19,6 +19,8 @@ export const StyledAccordionSummary = withStyles({
     fontFamily: "Pretendard",
     fontWeight: "bold",
     root: {
+        display: "flex",
+        padding: "0px 16px",
         minHeight: 28,
         maxHeight: 30,
         marginTop: 5,

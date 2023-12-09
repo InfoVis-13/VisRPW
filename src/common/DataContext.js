@@ -5,16 +5,24 @@ export const DataContext = createContext();
 
 function DataProvider(props) {
   const [selectedAP, setSelectedAP] = useState(-1);
-  const [timethreshold, setTimeShow] = useState([-1,999999]);
-  const [graphNumber, setGraphNumber] = useState(1);
+  const [timeThreshold, setTimeThreshold] = useState([-1,999999]);
+  const [graphNumber, setGraphNum] = useState(1);
+
+  const setGraphNumber = (num) => {
+    setGraphNum(num);
+    if(num === 1){
+      d3.select(".selection").remove();
+    }
+  }
+
   const selectedAPHandler = useMemo(() => ({selectedAP, setSelectedAP}), [selectedAP, setSelectedAP]);
-  const timethresholdHandler = useMemo(() => ({timethreshold, setTimeShow}), [timethreshold, setTimeShow]);
+  const timeThresholdHandler = useMemo(() => ({timeThreshold, setTimeThreshold}), [timeThreshold, setTimeThreshold]);
   const graphNumberHandler = useMemo(() => ({graphNumber, setGraphNumber}), [graphNumber, setGraphNumber]);
 
   return (
     <DataContext.Provider 
-      value={useMemo(() => ({selectedAPHandler, timethresholdHandler, graphNumberHandler})
-      ,[selectedAPHandler, timethresholdHandler, graphNumberHandler])}
+      value={useMemo(() => ({selectedAPHandler, timeThresholdHandler, graphNumberHandler})
+      ,[selectedAPHandler, timeThresholdHandler, graphNumberHandler])}
     >
       {props.children}
     </DataContext.Provider>
@@ -37,7 +45,7 @@ export function useTimeThreshold(){
   if(value === undefined){
     throw new Error("useTimeThreshold must be used within a DataContextProvider")
   }
-  return value.timethresholdHandler;
+  return value.timeThresholdHandler;
 }
 
 export function useGraphNumber(){

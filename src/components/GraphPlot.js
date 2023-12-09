@@ -18,7 +18,7 @@ const GraphPlot = (props) => {
 
     const plot = useRef(null);
     const {selectedAP, setSelectedAP} = useSelectedAP();
-    const {setTimeShow} = useTimeThreshold();
+    const {setTimeThreshold} = useTimeThreshold();
     const {setGraphNumber} = useGraphNumber();
 
     const brush = d3.brushX()
@@ -41,15 +41,21 @@ const GraphPlot = (props) => {
         brushdoing = true;
         if (selection === null) {
             setGraphNumber(1);
+            // init
+            // d3.select(".plotStackGroup").style("display","none");
+            // d3.select(".plotTputFair").style("display","");
         }
         else {
+            
             let [x0, x1] = selection;
             let datax0 = reverseXscale(x0)
             let datax1 = reverseXscale(x1)
 
             if(datax1 - datax0 > 1)
             {
-            setTimeShow([datax0,datax1]); 
+                setTimeThreshold([datax0,datax1]); 
+                // d3.select(".plotTputFair").style("display","none");
+                // d3.select(".plotStackGroup").style("display","");
             }
         }
         brushdoing = false;

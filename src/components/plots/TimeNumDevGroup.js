@@ -2,11 +2,11 @@ import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 
 import { criteria, labels, devGroupcolor } from "../../common/Constants";
+import { useTimeThreshold } from "../../common/DataContext";
 
 const TimeNumDevGroup = (props) => {
-    const data = props.data;
+    
     const plot = useRef(null);
-
     const width = props.width;
     const height = props.height;
     const plotMargin = props.plotMargin;
@@ -16,6 +16,8 @@ const TimeNumDevGroup = (props) => {
     const plotHeight = height-3*plotMargin-titleHeight; 
     const marginTop = 2*plotMargin+props.titleHeight;   
 
+    const {timeThreshold, setTimeThreshold} = useTimeThreshold();
+
     useEffect(() => {
         const plotSvg = d3.select(plot.current);
         
@@ -23,12 +25,16 @@ const TimeNumDevGroup = (props) => {
         // statsData.filter(d => ((d.time >= timethreshold[0]) && (d.time <= timethreshold[1])));
         // console.log(statsData);
 
+        plotSvg.selectAll(".mainrect").remove();
+
+        const data = props.data.filter(d => ((d.time >= timeThreshold[0]) && (d.time <= timeThreshold[1])));
+        console.log("data", data);
         // Determine the series that need to be stacked.
         const series = d3.stack()
             .keys(d3.union(data.map(d => d.label))) // distinct series keys, in input order
             .value(([, D], key) => D.get(key).count) // get value for each series key and stack
         (d3.index(data, d => d.time, d => d.label)); // group by stack then series key
-        // console.log("series", series);
+         //console.log("series", series);
 
         // Prepare the scales for positional and color encodings.
         const x = d3.scaleBand()
@@ -37,37 +43,9 @@ const TimeNumDevGroup = (props) => {
             .range([0, plotWidth])
             .padding(0.1);
 
-        // const x = d3.scaleBand()
-        //   .domain([
-        //     d3.min(statsData, d => d.time),
-        //     d3.max(statsData, d => d.time)+timeGap
-        //   ])
-        //   .range([0, plotWidth])
-        //   .padding(0.1);
-
-        // const x = d3.scaleUtc()
-        //   .domain([
-        //         d3.min(statsData, d => d.time),
-        //         d3.max(statsData, d => d.time)+timeGap
-        //   ])
-        //   // .domain(d3.extent(statsData, d => d.time))
-        //   .range([0, plotWidth]);
-
         const y = d3.scaleLinear()
             .domain([0, d3.max(series, d => d3.max(d, d => d[1])+1)])
             .rangeRound([plotHeight, 0]);
-
-        // const color = d3.scaleOrdinal()
-        //   .domain(series.map(d => d.key))
-        //   .range(labelColor);
-        //   // .range(d3.schemeTableau10);
-
-        // const color = d3.scaleOrdinal()
-        //   .domain(series.map(d => d.key))
-        //   .range(d3.schemeSpectral[series.length])
-        //   .unknown("#ccc");
-        
-        // console.log("color", color);
 
         const xAxisScale = d3.scaleLinear()
             .domain([ d3.min(data, d => d.time), d3.max(data, d => d.time) ])
@@ -75,6 +53,8 @@ const TimeNumDevGroup = (props) => {
         let xAxis = d3.axisBottom().scale(xAxisScale).ticks(30).tickSizeOuter(0);
         let yAxis = d3.axisLeft().scale(y).ticks(plotHeight / 80);
 
+        plotSvg.select(".x.axis.timenumdevgroup").remove()
+        plotSvg.select(".y.axis").remove()
         // Append the horizontal axis atop the area.
         plotSvg.append("g").attr("class", "x axis")
             .attr("transform", `translate(${plotMargin}, ${plotHeight + marginTop})`)
@@ -99,23 +79,6 @@ const TimeNumDevGroup = (props) => {
                 return "translate(" + this.getBBox().height * -1 + "," + this.getBBox().height*0.5 + ")rotate(-20)";
             });
 
-        // Construct an area shape.
-        // const area = d3.area()
-        //   .x(d => x(d.data[0]))
-        //   .y0(d => y(d[0]))
-        //   .y1(d => y(d[1]));
-
-        // Append a path for each series.
-        // mainSvg.append("g")
-        // .attr("transform", `translate(${plotMargin}, ${plotMargin})`)
-        // .selectAll()
-        // .data(series)
-        // .join("path")
-        //   .attr("fill", d => color(d.key))
-        //   .attr("d", area)
-        // .append("title")
-        //   .text(d => d.key);
-
         // Append a group for each series, and a rect for each element in the series.
         plotSvg.append("g")
             .attr("transform", `translate(${plotMargin}, ${marginTop})`)
@@ -127,12 +90,28 @@ const TimeNumDevGroup = (props) => {
             .data(D => D.map(d => (d.key = D.key, d)))
             .join("rect")
             // .transition().duration(200)
+            .attr("class","mainrect")
+            .attr("id",function(d, i) { return "rect" + i; })
             .attr("x", d => x(d.data[0]))
             .attr("y", d => y(d[1]))
             .attr("height", d => y(d[0]) - y(d[1]))
             .attr("width", x.bandwidth())
             .attr("stroke", "gray")
-            .attr("stroke-opacity", 0.2);
+            .attr("stroke-opacity", 0.2)
+            .on('mouseover', function()
+            {
+                var id = d3.select(this).attr("id");
+                d3.selectAll("#"+id).style('filter', 'brightness(50%)')
+            })
+            .on("mouseout",function()
+            {
+                var id = d3.select(this).attr("id");
+                d3.selectAll("#"+id).style('filter', '')
+            })
+            .on("click",function()
+            {
+
+            })
         
         // Add a legend for each color.
         plotSvg.append("g")
@@ -177,7 +156,7 @@ const TimeNumDevGroup = (props) => {
             .attr("fill", "black")
             .attr("stroke", "black");
         
-    });
+    },[timeThreshold]);
 
     return (
         <svg ref={plot} width={width} height={height}/> 

@@ -4,11 +4,17 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Mainplot from "./components/Mainplot";
+import Button from '@material-ui/core/Button';
 
 import "./App.css";
 import DataProvider from "./common/DataContext";
 
 function App() {
+  function uploadbuttonclick(filehandle)
+  {
+    console.log(filehandle.target.value)
+  }
+
   return (
     <div className="App">
       <AppBar position="static" sx={{width: "100%", height: '80px', backgroundColor: "#060017"}}>
@@ -31,11 +37,24 @@ function App() {
               lineHeight: 2, 
               height: '80px', 
               fontFamily: 'Pretendard',
-              fontWeight:'600' 
+              fontWeight:'600',
+              flexGrow: 1, 
             }
           }>
             VisRPW
           </Typography>
+          <input
+            type="file"
+            accept=".json,.bin"
+            style={{ display: 'none' }}
+            id="contained-button-file"
+            onChange={uploadbuttonclick}
+          />
+          <label htmlFor="contained-button-file">
+            <Button variant="contained" color="primary">
+              Upload
+            </Button>
+          </label>
         </Toolbar>
       </AppBar> 
       <DataProvider>

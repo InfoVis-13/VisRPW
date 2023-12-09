@@ -17,6 +17,12 @@ body {
   background-color: #494359;
   font-family: "Pretendard";
   margin: 0;
+  -ms-overflow-style: none; /* 인터넷 익스플로러 */
+  scrollbar-width: none; /* 파이어폭스 */
+}
+
+body::-webkit-scrollbar {
+  display: none; /* 크롬, 사파리 등 웹킷 브라우저 */
 }
 
 .scroll {
