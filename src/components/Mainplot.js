@@ -59,101 +59,6 @@ const Mainplot = (props) => {
   console.log(parseFloat("-1.000"));
 
  
-  const smainPlot = useRef(null);   
-  const [timethreshold, settimeshow] = useState([-1,999999]);
-  dataContext.setTimeShow = settimeshow; 
-  
-  useEffect(() => {
-    
-      const mainSvg = d3.select(smainPlot.current);
-
-      // const statsData = data.map(d => {
-      //     let eachData = {
-      //         "time" : d.time,
-      //         "number": d.number,
-      //         "veryGood": 0,
-      //         "good" : 0,
-      //         "normal": 0,
-      //         "poor" : 0,
-      //         "veryPoor" : 0
-      //     };
-      //     let cnt = 0;
-      //     for(let j=0; ; j++){
-      //         if (d[`sta${j+1}`] === -1.0) continue;
-      //         let labIdx = 0;
-      //         for(labIdx; labIdx<criteria.length; labIdx++){
-      //             if(d[`sta${j+1}`] <= criteria[labIdx]) break;
-      //         }
-      //         eachData[labels[labIdx]]++;
-      //         cnt++;
-      //         if (cnt === d.number) break;
-      //     }
-      //     return eachData;
-      // }).filter(d => ((d.time >= timethreshold[0]) && (d.time <= timethreshold[1])));
-      // console.log(statsData);
-
-      // let xScale = d3.scaleLinear()
-      // .domain([
-      //     d3.min(statsData, d => d.time),
-      //     d3.max(statsData, d => d.time)+timeGap
-      // ])
-      // .range([0, plotWidth]);
-
-      // let yScale = d3.scaleLinear()
-      // .domain([
-      //   0,
-      //   d3.max(statsData, d => d.number)
-      // ])
-      // .range([plotHeight, 0]);
-      
-      // mainSvg.selectAll(".mainrect").remove()
-
-      // for(let labIdx=labels.length-1; labIdx>=0; labIdx--) {
-      //   const plotData = statsData.map(d => {
-      //     let cumulativeVal = 0;
-      //     for(let j=labIdx; j>=0; j--) {
-      //       cumulativeVal += d[labels[j]];
-      //     }
-      //     return {
-      //       "time": d.time,
-      //       "number": cumulativeVal
-      //     };
-      //   });
-
-      //   console.log(plotData);
-      //   mainSvg.append("g")
-      //   .attr("transform", `translate(${plotMargin}, ${plotMargin})`)
-      //   .selectAll("rect")
-      //   .data(plotData)
-      //   .join("rect")
-      //   .attr("class","mainrect")
-      //   .attr("x", d => xScale(d.time))
-      //   .attr("y", d => yScale(d.number))
-      //   .attr("width", xScale(plotData[1].time)-xScale(plotData[0].time))
-      //   .attr("height", d => yScale(0)-yScale(d.number))
-      //   .attr("stroke", color[labIdx])
-      //   .attr("fill", color[labIdx]);
-      // }
-
-      // let xAxis = d3.axisBottom().scale(xScale);
-      // let yAxis = d3.axisLeft().scale(yScale);
-    
-      // mainSvg.select(".x-axis").remove()
-      // mainSvg.select(".y-axis").remove()
-
-
-      // mainSvg.append("g")
-      // .attr("transform", `translate(${plotMargin}, ${plotHeight + plotMargin})`)
-      // .attr("class", "x-axis")
-      // .call(xAxis);
-  
-      // mainSvg.append("g")
-      //     .attr("transform", `translate(${plotMargin}, ${plotMargin})`)
-      //     .attr("class", "y-axis")
-      //     .call(yAxis);
-      
-	}, [timethreshold]);
- 
 	return (
 		<Grid container sx={{width: "100%", pt: '20px', pl: `${paddingW}px`, pr: `${paddingW}px`}}>
       <Grid item xs={4}>
@@ -170,20 +75,25 @@ const Mainplot = (props) => {
         {/* <StyledTypography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, maxHeight: titleHeight }}>
           Number of Devices
         </StyledTypography> */}
-        {/* <TimeNumDevGroup
+        <div class="plotStackGroup" style={{display:"none"}}>
+        { <TimeNumDevGroup
           data={processDevNumDevGroupData(data[0]["throughput"])}
           width={rightGridInnerWidth}
           height={mainHeight-titleHeight-2*padding}
           plotMargin={plotMargin}
           titleHeight={titleHeight}
-        /> */}
+        /> }
+        </div>
+        <div class="plotTputFair" style={{display:""}}>
         <TimeTputWithFairness
+          
           data={processTimeTputWithFairnessData(data)}
           width={rightGridInnerWidth}
           height={mainHeight-titleHeight-2*padding}
           plotMargin={plotMargin}
           titleHeight={titleHeight}
         />
+        </div>
       </Grid>
 		</Grid>
 	)

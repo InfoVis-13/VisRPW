@@ -39,15 +39,23 @@ const GraphPlot = (props) => {
         brushdoing = true;
         if (selection === null) {
           // init
+
+          d3.select(".plotStackGroup").style("display","none");
+          d3.select(".plotTputFair").style("display","");
+          
+          
         }
         else {
+            
             let [x0, x1] = selection;
             let datax0 = reverseXscale(x0)
             let datax1 = reverseXscale(x1)
 
             if(datax1 - datax0 > 1)
             {
-            dataContext.setTimeShow([datax0,datax1]) 
+                d3.select(".plotTputFair").style("display","none");
+                d3.select(".plotStackGroup").style("display","");
+                dataContext.setTimeShow([datax0,datax1]) 
             }
         }
         brushdoing = false;

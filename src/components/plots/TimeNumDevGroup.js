@@ -2,11 +2,11 @@ import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 
 import { criteria, labels, devGroupcolor } from "../../common/Constants";
-
+import DataContext from '../DataContext.js';
 const TimeNumDevGroup = (props) => {
-    const data = props.data;
+    
     const plot = useRef(null);
-
+    const dataContext = React.useContext(DataContext);
     const width = props.width;
     const height = props.height;
     const plotMargin = props.plotMargin;
@@ -16,6 +16,8 @@ const TimeNumDevGroup = (props) => {
     const plotHeight = height-3*plotMargin-titleHeight; 
     const marginTop = 2*plotMargin+props.titleHeight;   
 
+    const [timethreshold, settimeshow] = useState([-1,999999]);
+    dataContext.setTimeShow = settimeshow; 
     useEffect(() => {
         const plotSvg = d3.select(plot.current);
             
@@ -24,12 +26,13 @@ const TimeNumDevGroup = (props) => {
 
         plotSvg.selectAll(".mainrect").remove();
 
+        const data = props.data.filter(d => ((d.time >= timethreshold[0]) && (d.time <= timethreshold[1])));
         // Determine the series that need to be stacked.
         const series = d3.stack()
             .keys(d3.union(data.map(d => d.label))) // distinct series keys, in input order
             .value(([, D], key) => D.get(key).count) // get value for each series key and stack
         (d3.index(data, d => d.time, d => d.label)); // group by stack then series key
-        // console.log("series", series);
+         //console.log("series", series);
 
         // Prepare the scales for positional and color encodings.
         const x = d3.scaleBand()
@@ -76,6 +79,8 @@ const TimeNumDevGroup = (props) => {
         let xAxis = d3.axisBottom().scale(xAxisScale).ticks(30).tickSizeOuter(0);
         let yAxis = d3.axisLeft().scale(y).ticks(plotHeight / 80);
 
+        plotSvg.select(".x.axis.timenumdevgroup").remove()
+        plotSvg.select(".y.axis").remove()
         // Append the horizontal axis atop the area.
         plotSvg.append("g").attr("class", "x axis timenumdevgroup")
             .attr("transform", `translate(${plotMargin}, ${plotHeight + marginTop})`)
@@ -123,12 +128,27 @@ const TimeNumDevGroup = (props) => {
             .data(D => D.map(d => (d.key = D.key, d)))
             .join("rect")
             .attr("class","mainrect")
+            .attr("id",function(d, i) { return "rect" + i; })
             .attr("x", d => x(d.data[0]))
             .attr("y", d => y(d[1]))
             .attr("height", d => y(d[0]) - y(d[1]))
             .attr("width", x.bandwidth())
             .attr("stroke", "gray")
-            .attr("stroke-opacity", 0.2);
+            .attr("stroke-opacity", 0.2)
+            .on('mouseover', function()
+            {
+                var id = d3.select(this).attr("id");
+                d3.selectAll("#"+id).style('filter', 'brightness(50%)')
+            })
+            .on("mouseout",function()
+            {
+                var id = d3.select(this).attr("id");
+                d3.selectAll("#"+id).style('filter', '')
+            })
+            .on("click",function()
+            {
+
+            })
         
         // Add a legend for each color.
         plotSvg.append("g")
@@ -173,7 +193,7 @@ const TimeNumDevGroup = (props) => {
             .attr("fill", "black")
             .attr("stroke", "black");
         
-    });
+    },[timethreshold]);
 
     return (
         <svg ref={plot} width={width} height={height}/> 
