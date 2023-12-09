@@ -19,8 +19,8 @@ import pdrAP2 from "../data/pdr_ap2.json";
 import numTxPktAP1 from "../data/tx_packets_ap1.json";
 import numTxPktAP2 from "../data/tx_packets_ap2.json";
 
-import { useSelectedAP, useTimeThreshold, useGraphNumber } from '../common/DataContext.js';
-import { preprocessData, processDevNumDevGroupData, processTimeTputWithFairnessData } from '../common/DataProcessing.js';
+import { useSelectedAP, useTime, useGraphNumber } from '../common/DataContext.js';
+import { preprocessData, processDevNumDevGroupData, processTimeTputWithFairnessData, processTputNumPktWithPdr } from '../common/DataProcessing.js';
 import TimeNumDevGroup from "./plots/TimeNumDevGroup.js";
 import TimeTputWithFairness from "./plots/TimeTputWithFairness.js";
 import TputNumPktWithPdr from "./plots/TputNumPktWithPdr.js";
@@ -42,7 +42,7 @@ const Mainplot = (props) => {
   // const [graphNumber, setGraphNumber] = useState(2);
   const {graphNumber} = useGraphNumber();
   const {selectedAP} = useSelectedAP(); // -1: none, 0: AP1, 1: AP2
-  const {timethreshold} = useTimeThreshold();
+  const {time} = useTime();
   // const [selectedAP, setSelectedAP] = useState(-1);
   
   const data = [
@@ -86,7 +86,7 @@ const Mainplot = (props) => {
           </Stack>
         </Stack>
       </Grid>
-      <Grid item xs={8} sx={{ ...componentStyles, height: mainHeight, p: `${padding}px`}}>
+      <Grid item xs={8} sx={{ ...componentStyles, height: mainHeight, p: `${padding}px`, position: "relative"}}>
         <ControlPanel graphNumber={graphNumber} height={titleHeight}/>
         {/* <StyledTypography variant="h6" component="div" sx={{ flexGrow: 1, pl:1, mt:1, maxHeight: titleHeight }}>
           Number of Devices
@@ -107,7 +107,7 @@ const Mainplot = (props) => {
           titleHeight={titleHeight}
         />:
         <TputNumPktWithPdr 
-          data={processDevNumDevGroupData(data[0]["throughput"])}
+          data={processTputNumPktWithPdr(data[selectedAP===-1?0:selectedAP], time)}
           width={rightGridInnerWidth}
           height={mainHeight-titleHeight-2*padding}
           plotMargin={plotMargin}

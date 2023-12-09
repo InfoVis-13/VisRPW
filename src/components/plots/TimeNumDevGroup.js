@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 
 import { criteria, labels, devGroupcolor } from "../../common/Constants";
-import { useTimeThreshold } from "../../common/DataContext";
+import { useTimeThreshold, useTime, useGraphNumber } from "../../common/DataContext";
 
 const TimeNumDevGroup = (props) => {
     
@@ -16,7 +16,9 @@ const TimeNumDevGroup = (props) => {
     const plotHeight = height-3*plotMargin-titleHeight; 
     const marginTop = 2*plotMargin+props.titleHeight;   
 
-    const {timeThreshold, setTimeThreshold} = useTimeThreshold();
+    const {timeThreshold} = useTimeThreshold();
+    const {setTime} = useTime();
+    const {setGraphNumber} = useGraphNumber();
 
     useEffect(() => {
         const plotSvg = d3.select(plot.current);
@@ -25,10 +27,9 @@ const TimeNumDevGroup = (props) => {
         // statsData.filter(d => ((d.time >= timethreshold[0]) && (d.time <= timethreshold[1])));
         // console.log(statsData);
 
-        plotSvg.selectAll(".mainrect").remove();
+        // plotSvg.selectAll(".mainrect").remove();
 
         const data = props.data.filter(d => ((d.time >= timeThreshold[0]) && (d.time <= timeThreshold[1])));
-        console.log("data", data);
         // Determine the series that need to be stacked.
         const series = d3.stack()
             .keys(d3.union(data.map(d => d.label))) // distinct series keys, in input order
@@ -53,8 +54,8 @@ const TimeNumDevGroup = (props) => {
         let xAxis = d3.axisBottom().scale(xAxisScale).ticks(30).tickSizeOuter(0);
         let yAxis = d3.axisLeft().scale(y).ticks(plotHeight / 80);
 
-        plotSvg.select(".x.axis.timenumdevgroup").remove()
-        plotSvg.select(".y.axis").remove()
+        // plotSvg.select(".x.axis").remove();
+        // plotSvg.select(".y.axis").remove();
         // Append the horizontal axis atop the area.
         plotSvg.append("g").attr("class", "x axis")
             .attr("transform", `translate(${plotMargin}, ${plotHeight + marginTop})`)
@@ -90,27 +91,34 @@ const TimeNumDevGroup = (props) => {
             .data(D => D.map(d => (d.key = D.key, d)))
             .join("rect")
             // .transition().duration(200)
-            .attr("class","mainrect")
-            .attr("id",function(d, i) { return "rect" + i; })
+            .attr("class", d=>`time-${d.data[0]} mainrect`)
+            // .attr("id",function(d, i) { 
+            //     console.log("id", d.data[0]);
+            //     // return `time-${d.data[0]}`;
+            //     return "rect" + i; 
+            // })
             .attr("x", d => x(d.data[0]))
             .attr("y", d => y(d[1]))
             .attr("height", d => y(d[0]) - y(d[1]))
             .attr("width", x.bandwidth())
             .attr("stroke", "gray")
             .attr("stroke-opacity", 0.2)
-            .on('mouseover', function()
-            {
-                var id = d3.select(this).attr("id");
-                d3.selectAll("#"+id).style('filter', 'brightness(50%)')
+            .on('mouseover', function() {
+                const className = d3.select(this).attr("class");
+                // console.log("className", className);
+                const id = className.split(" ")[0];
+                d3.selectAll(".mainrect").attr("opacity", 0.5);
+                d3.selectAll("."+id).attr("opacity", 1);
             })
-            .on("mouseout",function()
-            {
-                var id = d3.select(this).attr("id");
-                d3.selectAll("#"+id).style('filter', '')
+            .on("mouseout", function(){
+                d3.selectAll(".mainrect").attr("opacity", 1);
             })
-            .on("click",function()
-            {
-
+            .on("click", function(){
+                const className = d3.select(this).attr("class");
+                const id = className.split(" ")[0];
+                var time = id.split("-")[1];
+                setTime(parseInt(time));
+                setGraphNumber(3);
             })
         
         // Add a legend for each color.

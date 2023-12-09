@@ -63,6 +63,10 @@ export const StyledTypography = withStyles({
         flexGrow: 1,
         pl:1,
         mt:1,
+        position: (props) => {
+            return props.variant === "subtitle2"? "absoulte": "relative";
+        },
+        bottom: 0,
     }
 })(Typography);
 

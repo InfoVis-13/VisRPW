@@ -89,12 +89,13 @@ export function processTputNumPktWithPdr(data, time) {
     let timeIdx = 0;
     let number = 0;
     let cnt = 0;
-    for(let timeIdx; timeIdx<data["throughput"].length; timeIdx++) {
-        if (data["throughput"][timeIdx]["time"] === time) {
-            number = data["throughput"][timeIdx]["number"];
-            break;
-        }
+    console.log("time", time);
+    console.log("data", data);
+    for(timeIdx; timeIdx<data["throughput"].length; timeIdx++) {
+        if (data["throughput"][timeIdx]["time"] === time) break;
     }
+    console.log("timeIdx", timeIdx);
+    number = data["throughput"][timeIdx]["number"];
     for (let i=1; ;i++) {
         if (data["throughput"][timeIdx][`sta${i}`] === -1.0) continue;
         const throughput = data["throughput"][timeIdx][`sta${i}`];
@@ -102,6 +103,7 @@ export function processTputNumPktWithPdr(data, time) {
         for(labIdx; labIdx<criteria.length; labIdx++){
             if(throughput <= criteria[labIdx]) break;
         }
+        console.log("label", labels[labIdx]);
         statsData.push({
             "id": `sta${i}`,
             "throughput": throughput,
@@ -109,6 +111,7 @@ export function processTputNumPktWithPdr(data, time) {
             "numTxPkts": data["numTxPkts"][timeIdx][`sta${i}`],
             "status": labels[labIdx]
         })
+        cnt++;
         if (cnt === number) break;
     }
     return {

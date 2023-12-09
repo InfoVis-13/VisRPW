@@ -27,14 +27,13 @@ const TimeTputWithFairness = (props) => {
     }
 
     useEffect(() => {
-        console.log(data);
+        // console.log(data);
         const plotSvg = d3.select(plot.current);
         const fairnessSvg = d3.select(fairnessPlot.current);
         const timeGap = data[1].time-data[0].time;
 
         // mouseover and mouseout functions
         function mouseover (e) {
-            console.log(e.target.className);
             const className = e.target.className.baseVal.split(" ")[0];
             d3.selectAll('.main.contents')
                 .transition().duration(100)
@@ -58,7 +57,7 @@ const TimeTputWithFairness = (props) => {
             console.log(e.target.className);
             const className = e.target.className.baseVal.split(" ")[0];
             d3.selectAll('.main.contents')
-                .classed("selected", false)
+                .classed("selected", false) 
                 .transition().duration(100)
                 .attr("opacity", 0.2);
             d3.selectAll(`.${className}`)
