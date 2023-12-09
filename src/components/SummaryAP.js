@@ -67,7 +67,7 @@ const SummaryAP = (props) => {
         <StyledTypography variant="h6" component="div" sx={{padding: `${padding}px`}}>
             Summary of APs
         </StyledTypography>
-        <div style={{ overflow:"scroll", height: `${props.height-40-2*padding}px` }}>
+        <div className="scroll" style={{ height: `${props.height-40-2*padding}px`}}>
         {apConfig.map((config, idx)=> {
             return DisplayAPConfig(idx, config);
         })}

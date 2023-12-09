@@ -45,13 +45,14 @@ export const StyledTypography = withStyles({
     root: {
         fontFamily: "Pretendard",
         fontSize: (props) => {
-            if (props.variant === "h6") return window.innerWidth>=1200? 22: (window.innerWidth>=600? 22: 18); //21
-            else if (props.variant === "subtitle1") return window.innerWidth>1200? 19: (window.innerWidth >= 600? 18 : 16); //18
-            else return window.innerWidth>=1200? 17: (window.innerWidth >= 600? 15 : 14); //16
-
-            // if (props.variant === "h6") return "2.5vh"; //21
-            // else if (props.variant === "subtitle1") return "2.2vh"; //18
-            // else return "1.8vh"; //16
+            // console.log("innerWidth: ", window.screen.width);
+            // if (props.variant === "h6") return window.screen.width>=1200? 22: (window.screen.width>=600? 20: 18); //21
+            // else if (props.variant === "subtitle1") return window.screen.width>1200? 19: (window.screen.width >= 600? 17 : 15); //18
+            // else return window.screen.width>=1200? 17: (window.screen.width >= 600? 15 : 14); //16
+            
+            if (props.variant === "h6") return "1.4vw"; //21
+            else if (props.variant === "subtitle1") return "1.2vw"; //18
+            else return "1vw"; //16
         },
         fontWeight: (props) => {
             if (props.variant === "h6") return "500";

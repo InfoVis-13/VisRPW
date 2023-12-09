@@ -18,3 +18,13 @@ body {
   font-family: "Pretendard";
   margin: 0;
 }
+
+.scroll {
+  overflow-y: scroll;
+  -ms-overflow-style: none; /* 인터넷 익스플로러 */
+  scrollbar-width: none; /* 파이어폭스 */
+}
+
+.scroll::-webkit-scrollbar {
+  display: none; /* 크롬, 사파리 등 웹킷 브라우저 */
+}
