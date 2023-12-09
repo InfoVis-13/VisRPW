@@ -28,3 +28,7 @@ body {
 .scroll::-webkit-scrollbar {
   display: none; /* 크롬, 사파리 등 웹킷 브라우저 */
 }
+
+.opacity {
+  opacity: 0.1;
+}

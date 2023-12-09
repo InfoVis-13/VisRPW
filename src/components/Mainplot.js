@@ -19,7 +19,7 @@ import pdrAP2 from "../data/pdr_ap2.json";
 import numTxPktAP1 from "../data/tx_packets_ap1.json";
 import numTxPktAP2 from "../data/tx_packets_ap2.json";
 
-import { useSelectedAP, useTimeThreshold } from '../common/DataContext.js';
+import { useSelectedAP, useTimeThreshold, useGraphNumber } from '../common/DataContext.js';
 import { preprocessData, processDevNumDevGroupData, processTimeTputWithFairnessData } from '../common/DataProcessing.js';
 import TimeNumDevGroup from "./plots/TimeNumDevGroup.js";
 import TimeTputWithFairness from "./plots/TimeTputWithFairness.js";
@@ -39,7 +39,8 @@ const Mainplot = (props) => {
   const mainHeight = entireHeight-2*padding;
 
   const [numAps , setNumAps] = useState(2);
-  const [graphNumber, setGraphNumber] = useState(2);
+  // const [graphNumber, setGraphNumber] = useState(2);
+  const {graphNumber} = useGraphNumber();
   const {selectedAP} = useSelectedAP(); // -1: none, 0: AP1, 1: AP2
   const {timethreshold} = useTimeThreshold();
   // const [selectedAP, setSelectedAP] = useState(-1);

@@ -3,7 +3,7 @@ import * as d3 from "d3";
 
 import { StyledTypography, componentStyles } from "../common/StyledComponents.js";
 import { apColor } from "../common/Constants.js";
-import { useTimeThreshold } from "../common/DataContext.js";
+import { useSelectedAP ,useGraphNumber, useTimeThreshold } from "../common/DataContext.js";
 
 const GraphPlot = (props) => {
 
@@ -17,11 +17,14 @@ const GraphPlot = (props) => {
     const plotHeight = height-2*margin;
 
     const plot = useRef(null);
+    const {selectedAP, setSelectedAP} = useSelectedAP();
     const {setTimeShow} = useTimeThreshold();
+    const {setGraphNumber} = useGraphNumber();
 
     const brush = d3.brushX()
     .extent([[0, 0], [plotWidth, plotHeight]])
-    .on("start brush end", brushedLeft);
+    .on("start brush", brushed)
+    .on("end", brushedEnd);
 
     let reverseXscale = d3.scaleLinear()
     .domain([0, plotWidth])
@@ -32,12 +35,12 @@ const GraphPlot = (props) => {
 
     var brushdoing = false;
 
-    function brushedLeft({selection}) {
+    function brushed({selection}) {
         if (brushdoing === true)
             return;
         brushdoing = true;
         if (selection === null) {
-          // init
+            setGraphNumber(1);
         }
         else {
             let [x0, x1] = selection;
@@ -50,6 +53,19 @@ const GraphPlot = (props) => {
             }
         }
         brushdoing = false;
+    }
+
+    function brushedEnd({selection}) {
+        if(selection === null) {
+            setGraphNumber(1);
+        }
+        else{
+            setGraphNumber(2);
+            console.log("brushedEnd");
+            if (selectedAP === -1) {
+                setSelectedAP(0);
+            }
+        }
     }
 
     useEffect(() => {

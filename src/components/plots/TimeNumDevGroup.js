@@ -18,11 +18,10 @@ const TimeNumDevGroup = (props) => {
 
     useEffect(() => {
         const plotSvg = d3.select(plot.current);
-            
+        
+        plotSvg.selectAll("*").remove();
         // statsData.filter(d => ((d.time >= timethreshold[0]) && (d.time <= timethreshold[1])));
         // console.log(statsData);
-
-        plotSvg.selectAll(".mainrect").remove();
 
         // Determine the series that need to be stacked.
         const series = d3.stack()
@@ -77,20 +76,25 @@ const TimeNumDevGroup = (props) => {
         let yAxis = d3.axisLeft().scale(y).ticks(plotHeight / 80);
 
         // Append the horizontal axis atop the area.
-        plotSvg.append("g").attr("class", "x axis timenumdevgroup")
+        plotSvg.append("g").attr("class", "x axis")
             .attr("transform", `translate(${plotMargin}, ${plotHeight + marginTop})`)
+            .transition().duration(200)
             .call(xAxis);
         
         // Add the y-axis, remove the domain line, add grid lines and a label.
-        plotSvg.append("g").attr("class", "y axis").call(yAxis)
+        plotSvg.append("g").attr("class", "y axis")
             .attr("transform", `translate(${plotMargin}, ${marginTop})`)
+            .transition().duration(200)
+            .call(yAxis);
+
+        plotSvg.selectAll(".y.axis")
             .call(g => g.select(".domain").remove())
             .call(g => g.selectAll(".tick line").clone()
                 .attr("x2", plotWidth)
                 .attr("stroke-opacity", 0.1));
         
         // Rotate the x-axis labels.
-        plotSvg.selectAll(".x.axis.timenumdevgroup text")
+        plotSvg.selectAll(".x.axis text")
         .attr("transform", function(d) {
                 return "translate(" + this.getBBox().height * -1 + "," + this.getBBox().height*0.5 + ")rotate(-20)";
             });
@@ -122,7 +126,7 @@ const TimeNumDevGroup = (props) => {
             .selectAll("rect")
             .data(D => D.map(d => (d.key = D.key, d)))
             .join("rect")
-            .attr("class","mainrect")
+            // .transition().duration(200)
             .attr("x", d => x(d.data[0]))
             .attr("y", d => y(d[1]))
             .attr("height", d => y(d[0]) - y(d[1]))
