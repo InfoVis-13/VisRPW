@@ -2,12 +2,12 @@ import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 
 import { apColor } from "../../common/Constants";
-import { useSelectedAP } from "../../common/DataContext";
+import { useSelectedAP, useTimeThreshold, useGraphNumber, useBrushed } from "../../common/DataContext";
+import TimeFairness from "./TimeFairness";
 
 const TimeTputWithFairness = (props) => {
 
     const data = props.data;
-    const {selectedAP, setSelectedAP} = useSelectedAP();
     const plot = useRef(null);
     const [init, setInit] = useState(false);
     const fairnessPlot = useRef(null);
@@ -22,8 +22,58 @@ const TimeTputWithFairness = (props) => {
     const plotHeight = height-4*plotMargin-titleHeight; 
     const marginTop = 2*plotMargin;   
 
+    const {selectedAP, setSelectedAP} = useSelectedAP();
+    const {setTimeThreshold} = useTimeThreshold();
+    const {setGraphNumber} = useGraphNumber();
+    const {setBrushed} = useBrushed();
+
     const selectedAPHandler = (selectedAP) => {
         setSelectedAP(selectedAP);
+    }
+
+    const brush = d3.brushX()
+        .extent([[0, 0], [plotWidth, plotHeight]])
+        .on("start brush", Brushed)
+        .on("end", brushedEnd);
+
+    let reverseXscale = d3.scaleLinear()
+    .domain([0, plotWidth])
+    .range([
+        d3.min(data, d => d.time),
+        d3.max(data, d => d.time)+(data[1].time-data[0].time)
+    ]);
+
+    var brushdoing = false;
+
+    function Brushed({selection}) {
+        if (brushdoing === true)
+            return;
+        brushdoing = true;
+        if (selection === null) {
+            setGraphNumber(1);
+            // init
+            // d3.select(".plotStackGroup").style("display","none");
+            // d3.select(".plotTputFair").style("display","");
+        }else {
+            let [x0, x1] = selection;
+            let datax0 = reverseXscale(x0)
+            let datax1 = reverseXscale(x1)
+
+            if(datax1 - datax0 > 1){
+                setTimeThreshold([datax0,datax1]); 
+            }
+        }
+        brushdoing = false;
+    }
+
+    function brushedEnd({selection}) {
+        if(selection === null) {
+            setGraphNumber(1);
+        }
+        else{
+            setGraphNumber(2);
+            setBrushed(true);
+        }
     }
 
     useEffect(() => {
@@ -35,7 +85,7 @@ const TimeTputWithFairness = (props) => {
         // mouseover and mouseout functions
         function mouseover (e) {
             const className = e.target.className.baseVal.split(" ")[0];
-            d3.selectAll('.main.contents')
+            d3.selectAll('.main')
                 .transition().duration(100)
                 .attr("opacity", 0.2);
             d3.selectAll(`.${className}`)
@@ -44,10 +94,10 @@ const TimeTputWithFairness = (props) => {
         };
 
         function mouseout (e) {
-            d3.selectAll('.main.contents')
+            d3.selectAll('.main')
                 .transition().duration(100)
                 .attr("opacity", 0.2);
-            d3.selectAll('.main.contents.selected')
+            d3.selectAll('.main.selected')
                     .transition().duration(100)
                     .attr("opacity", 1);
         };
@@ -56,7 +106,7 @@ const TimeTputWithFairness = (props) => {
         function click(e) {
             console.log(e.target.className);
             const className = e.target.className.baseVal.split(" ")[0];
-            d3.selectAll('.main.contents')
+            d3.selectAll('.main')
                 .classed("selected", false) 
                 .transition().duration(100)
                 .attr("opacity", 0.2);
@@ -286,7 +336,7 @@ const TimeTputWithFairness = (props) => {
                     .join("rect")
                     .attr("x", d => xScale(d.time)-barWidth/2)
                     .attr("y", idx*(fairnessHeight+fairnessHeight/2))
-                    .attr("class", `${key} main contents`)
+                    .attr("class", `${key} main contents selected`)
                     .attr("width", xScale(data[1].time)-xScale(data[0].time))
                     .attr("height", fairnessHeight)
                     .attr("fill", d => fairnessColor(d.fairness))
@@ -298,7 +348,7 @@ const TimeTputWithFairness = (props) => {
                     .join("rect")
                     .attr("x", d => xScale(data[0].time)-barWidth/2)
                     .attr("y", idx*(fairnessHeight+fairnessHeight/2))
-                    .attr("class", `${key} main contents`)
+                    .attr("class", `${key} main contents selected`)
                     .attr("width", plotWidth+xScale(data[1].time)-xScale(data[0].time))
                     .attr("height", fairnessHeight)
                     .attr("fill", "none")
@@ -311,7 +361,7 @@ const TimeTputWithFairness = (props) => {
                     .join("text")
                     .attr("x", 0)
                     .attr("y", idx*(fairnessHeight+fairnessHeight/2)+fairnessHeight/2+1)
-                    .attr("class", `${key} main contents`)
+                    .attr("class", `${key} main contents selected`)
                     .attr("text-anchor", "middle")
                     .attr("alignment-baseline", "middle")
                     .attr("font-size", 10)
@@ -321,9 +371,9 @@ const TimeTputWithFairness = (props) => {
             setInit(true);
         }
         d3.selectAll('*').transition().duration(100).attr("opacity", 1);
-        if(selectedAP !== -1) {
+        if(selectedAP !== -1){
             console.log(`.AP${selectedAP+1}`);
-            d3.selectAll('.main.contents')
+            d3.selectAll('.main')
                 .classed("selected", false)
                 .transition().duration(100)
                 .attr("opacity", 0.2);
@@ -331,6 +381,13 @@ const TimeTputWithFairness = (props) => {
                 .classed("selected", true)
                 .transition().duration(100)
                 .attr("opacity", 1);
+            d3.select(plot.current).append('g')
+                .attr('class', 'brush')
+                .attr('transform', `translate(${plotMargin},${marginTop})`)
+                .attr("id", "brush")
+                .call(brush);
+        }else{
+            d3.select("#brush").remove();
         }
 
     }, [selectedAP]);
@@ -338,7 +395,13 @@ const TimeTputWithFairness = (props) => {
     return (
         <React.Fragment>
             <svg ref={plot} width={width} height={height-titleHeight-plotMargin} />
-            <svg ref={fairnessPlot} width={width} height={bottomHeight} />
+            {/* <svg ref={fairnessPlot} width={width} height={bottomHeight} /> */}
+            <TimeFairness 
+                data={data} 
+                width={width} 
+                height={bottomHeight} 
+                plotMargin={plotMargin} 
+            />
         </React.Fragment>
     );
 }

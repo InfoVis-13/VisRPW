@@ -7,24 +7,18 @@ function DataProvider(props) {
   const [selectedAP, setSelectedAP] = useState(-1);
   const [timeThreshold, setTimeThreshold] = useState([-1,999999]);
   const [time, setTime] = useState(0);
-  const [graphNumber, setGraphNum] = useState(1);
-
-  const setGraphNumber = (num) => {
-    setGraphNum(num);
-    if(num === 1){
-      d3.select(".selection").remove();
-    }
-  }
+  const [graphNumber, setGraphNumber] = useState(1);
+  const [brushed, setBrushed] = useState(true);
 
   const selectedAPHandler = useMemo(() => ({selectedAP, setSelectedAP}), [selectedAP, setSelectedAP]);
   const timeThresholdHandler = useMemo(() => ({timeThreshold, setTimeThreshold}), [timeThreshold, setTimeThreshold]);
   const timeHandler = useMemo(() => ({time, setTime}), [time, setTime]);
   const graphNumberHandler = useMemo(() => ({graphNumber, setGraphNumber}), [graphNumber, setGraphNumber]);
-
+  const brushedHandler = useMemo(() => ({brushed, setBrushed}), [brushed, setBrushed]);
   return (
     <DataContext.Provider 
-      value={useMemo(() => ({selectedAPHandler, timeThresholdHandler, timeHandler, graphNumberHandler})
-      ,[selectedAPHandler, timeThresholdHandler, graphNumberHandler])}
+      value={useMemo(() => ({selectedAPHandler, timeThresholdHandler, timeHandler, graphNumberHandler, brushedHandler})
+      ,[selectedAPHandler, timeThresholdHandler, graphNumberHandler, brushedHandler])}
     >
       {props.children}
     </DataContext.Provider>
@@ -63,4 +57,12 @@ export function useGraphNumber(){
     throw new Error("useGraphNumber must be used within a DataContextProvider")
   }
   return value.graphNumberHandler;
+}
+
+export function useBrushed(){
+  const value = useContext(DataContext);
+  if(value === undefined){
+    throw new Error("useBrushed must be used within a DataContextProvider")
+  }
+  return value.brushedHandler;
 }

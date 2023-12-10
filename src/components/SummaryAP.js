@@ -13,18 +13,19 @@ import { useSelectedAP, useGraphNumber } from "../common/DataContext.js";
 
 const SummaryAP = (props) => {
     
-    const [numAps , setNumAps] = useState(2);
     const [apConfig, setApConfig] = useState([configAp1, configAp2]);
     const {selectedAP, setSelectedAP} = useSelectedAP(); // -1: none, 0: AP1, 1: AP2
     const {graphNumber, setGraphNumber} = useGraphNumber();
     // const [selectedAP, setSelectedAP] = useState(-1);
     const padding = props.padding;
-    const sPlot = useRef(null);  
 
     const handleChange = (panel) => (event, isExpanded) => {
         console.log(panel);
         setSelectedAP(isExpanded ? panel : -1);
         if(graphNumber!==1){
+            console.log("remove");
+            d3.selectAll(".selection").remove();
+            d3.selectAll(".handle").remove();   
             setGraphNumber(1);
         }
     };

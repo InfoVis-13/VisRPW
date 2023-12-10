@@ -26,7 +26,7 @@ const TputNumPktWithPdr = (props) => {
         console.log(value);
 
         const label = plotSvg.append("text")
-            .attr("transform", `translate(${plotWidth/3+plotMargin}, ${plotHeight/2+plotMargin})`)
+            .attr("transform", `translate(${plotWidth/3+plotMargin+15}, ${plotHeight/2+plotMargin})`)
             .attr("text-anchor", "middle")
             .attr("alignment-baseline", "middle")
             .attr("fill", "#888")
@@ -48,15 +48,15 @@ const TputNumPktWithPdr = (props) => {
         // in blur
         filter.append("feGaussianBlur")
             .attr("in", "SourceAlpha")
-            .attr("stdDeviation", 10)
+            .attr("stdDeviation", 3)
             .attr("result", "blur");
 
         // translate output of Gaussian blur to the right and downwards with 2px
         // store result in offsetBlur
         filter.append("feOffset")
             .attr("in", "blur")
-            .attr("dx", 5)
-            .attr("dy", 5)
+            .attr("dx", 3)
+            .attr("dy", 3)
             .attr("result", "offsetBlur");
 
         // overlay original SourceGraphic over translated blurred opacity by using
@@ -93,21 +93,21 @@ const TputNumPktWithPdr = (props) => {
                         .attr("x", 0)
                         .attr("y", 0)
                         .attr("dy", `${dy}em`)
-                        .text(`Throughput - ${staData[key].toFixed(3)} Mbps`);
+                        .text(`Throughput ▹ ${staData[key].toFixed(3)} Mbps`);
                 }
                 else if (key === "numTxPkts"){
                     return label.append("tspan")
                         .attr("x", 0)
                         .attr("y", 0)
                         .attr("dy", `${dy}em`)
-                        .text(`Packets Transmitted - #${staData[key]}`);
+                        .text(`Packets Transmitted ▹ #${staData[key]}`);
                 }
                 else if (key  === "pdr"){
                     return label.append("tspan")
                         .attr("x", 0)
                         .attr("y", 0)
                         .attr("dy", `${dy}em`)
-                        .text(`Delivery Ratio - ${staData[key].toFixed(2)} %`);
+                        .text(`Delivery Ratio ▹ ${staData[key].toFixed(2)} %`);
                 }
             });
         }
@@ -132,15 +132,15 @@ const TputNumPktWithPdr = (props) => {
             .innerRadius(radius/2)
             .outerRadius(d => outterRadiusScale(d.data.numTxPkts))
             .cornerRadius(1)
-            .padAngle(0.01);
+            .padAngle(0.008);
         let pdrArc = d3.arc()
             .innerRadius(radius/2)
             .outerRadius(d => outterRadiusScale(d.data.pdr*d.data.numTxPkts/100))
             .cornerRadius(1)
-            .padAngle(0.01);
+            .padAngle(0.008);
     
         let pieChart = plotSvg.append("g")
-            .attr("transform", `translate(${plotWidth/3+plotMargin}, ${plotHeight/2+plotMargin})`);
+            .attr("transform", `translate(${plotWidth/3+plotMargin+15}, ${plotHeight/2+plotMargin})`);
         // Append piechart about number of packets.
         pieChart.selectAll("path")
             .data(pie(value))
@@ -214,10 +214,10 @@ const TputNumPktWithPdr = (props) => {
             <svg ref={plot} width={width} height={height} />
             <div style={{
                 position: "absolute",
-                bottom: height/8,
-                right: plotWidth/16,
-                width: plotWidth/4+10,
-                border: "1.5px solid #888",
+                bottom: height/4,
+                right: 10,
+                width: plotWidth/3,
+                // border: "1.5px solid #888",
                 borderRadius: 3,
                 padding: "10px 15px",
                 // backgroundColor: "#b8b6bf",
@@ -227,7 +227,7 @@ const TputNumPktWithPdr = (props) => {
                     <Breadcrumbs
                         separator={<NavigateNextIcon fontSize="small" />}
                         aria-label="breadcrumb"
-                        sx={{fontSize: "1.1em"}}
+                        sx={{fontSize: "1.2em"}}
                     >
                     <div>Time</div>
                     <div>{data.time} </div>
@@ -235,7 +235,7 @@ const TputNumPktWithPdr = (props) => {
                     <Breadcrumbs
                         separator={<NavigateNextIcon fontSize="small" />}
                         aria-label="breadcrumb"
-                        sx={{fontSize: "1.1em"}}
+                        sx={{fontSize: "1.2em"}}
                     >
                     <div>Number of Devices</div> 
                     <div>{data.number}</div>

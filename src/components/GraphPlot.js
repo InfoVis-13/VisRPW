@@ -3,7 +3,7 @@ import * as d3 from "d3";
 
 import { StyledTypography, componentStyles } from "../common/StyledComponents.js";
 import { apColor } from "../common/Constants.js";
-import { useSelectedAP ,useGraphNumber, useTimeThreshold } from "../common/DataContext.js";
+import { useGraphNumber, useTimeThreshold } from "../common/DataContext.js";
 
 const GraphPlot = (props) => {
 
@@ -17,13 +17,13 @@ const GraphPlot = (props) => {
     const plotHeight = height-2*margin;
 
     const plot = useRef(null);
-    const {selectedAP, setSelectedAP} = useSelectedAP();
+    const [init, setInit] = useState(false);
     const {setTimeThreshold} = useTimeThreshold();
     const {setGraphNumber} = useGraphNumber();
 
     const brush = d3.brushX()
     .extent([[0, 0], [plotWidth, plotHeight]])
-    .on("start brush", brushed)
+    .on("start brush", Brushed)
     .on("end", brushedEnd);
 
     let reverseXscale = d3.scaleLinear()
@@ -35,7 +35,7 @@ const GraphPlot = (props) => {
 
     var brushdoing = false;
 
-    function brushed({selection}) {
+    function Brushed({selection}) {
         if (brushdoing === true)
             return;
         brushdoing = true;
@@ -44,18 +44,13 @@ const GraphPlot = (props) => {
             // init
             // d3.select(".plotStackGroup").style("display","none");
             // d3.select(".plotTputFair").style("display","");
-        }
-        else {
-            
+        }else {
             let [x0, x1] = selection;
             let datax0 = reverseXscale(x0)
             let datax1 = reverseXscale(x1)
 
-            if(datax1 - datax0 > 1)
-            {
+            if(datax1 - datax0 > 1){
                 setTimeThreshold([datax0,datax1]); 
-                // d3.select(".plotTputFair").style("display","none");
-                // d3.select(".plotStackGroup").style("display","");
             }
         }
         brushdoing = false;
@@ -67,73 +62,64 @@ const GraphPlot = (props) => {
         }
         else{
             setGraphNumber(2);
-            console.log("brushedEnd");
-            if (selectedAP === -1) {
-                setSelectedAP(0);
-            }
         }
     }
 
     useEffect(() => {
 
         const plotSvg = d3.select(plot.current);
-        
-        // Add a container for each series.
-        const serie = plotSvg.append("g")
-                        .selectAll()
-                        .data(d3.group(data, d => d.key))
-                        .join("g");
-        // const x = d3.scaleUtc()
-        //             .domain(d3.extent(data, d => d.time))
-        //             .range([0, plotWidth]);
-        const x = d3.scaleLinear()
-                    .domain([
-                        d3.min(data, d => d.time),
-                        d3.max(data, d => d.time)
-                    ])
-                    .range([0, plotWidth]);
-        const y = d3.scaleLinear()
-                    .domain([
-                        0,
-                        d3.max(data, d => d.number)+3
-                    ])
-                    .range([plotHeight, 0]);
+        if(!init){
+            // Add a container for each series.
+            const serie = plotSvg.append("g")
+                            .selectAll()
+                            .data(d3.group(data, d => d.key))
+                            .join("g");
+            // const x = d3.scaleUtc()
+            //             .domain(d3.extent(data, d => d.time))
+            //             .range([0, plotWidth]);
+            const x = d3.scaleLinear()
+                        .domain([
+                            d3.min(data, d => d.time),
+                            d3.max(data, d => d.time)
+                        ])
+                        .range([0, plotWidth]);
+            const y = d3.scaleLinear()
+                        .domain([
+                            0,
+                            d3.max(data, d => d.number)+3
+                        ])
+                        .range([plotHeight, 0]);
 
-        let xAxis = d3.axisBottom().scale(x);
-        let yAxis = d3.axisLeft()
-                        .scale(y)
-                        .ticks(5);
+            let xAxis = d3.axisBottom().scale(x);
+            let yAxis = d3.axisLeft()
+                            .scale(y)
+                            .ticks(5);
 
-        serie.append("path")
-            .attr("transform", `translate(${margin}, ${margin})`)
-            .attr("fill", "none")
-            .attr("stroke", (d, i) => apColor[0][i])
-            .attr("stroke-width", 1.5)
-            .attr("d", d=>d3.line()
-                .x(d => x(d.time))
-                .y(d => y(d.number))
-                (d[1]));
+            serie.append("path")
+                .attr("transform", `translate(${margin}, ${margin})`)
+                .attr("fill", "none")
+                .attr("stroke", (d, i) => apColor[0][i])
+                .attr("stroke-width", 1.5)
+                .attr("d", d=>d3.line()
+                    .x(d => x(d.time))
+                    .y(d => y(d.number))
+                    (d[1]));
 
-        plotSvg.append("g")
-            .attr("transform", `translate(${margin}, ${plotHeight + margin})`)
-            .call(xAxis)
-            .call(g => g.selectAll(".tick line").clone()
-                .attr("y2", -plotHeight)
-                .attr("stroke-opacity", 0.1));
+            plotSvg.append("g")
+                .attr("transform", `translate(${margin}, ${plotHeight + margin})`)
+                .call(xAxis)
+                .call(g => g.selectAll(".tick line").clone()
+                    .attr("y2", -plotHeight)
+                    .attr("stroke-opacity", 0.1));
 
-        plotSvg.append("g")
-            .attr("transform", `translate(${margin}, ${margin})`)
-            .call(yAxis)
-            .call(g => g.selectAll(".tick line").clone()
-                .attr("x2", plotWidth)
-                .attr("stroke-opacity", 0.1));
-
-        d3.select(plot.current).append('g')
-        .attr('class', 'brushLeft')
-        .attr('transform', `translate(${margin},${margin})`)
-        .attr("id", "brushLeft")
-        .call(brush);
-
+            plotSvg.append("g")
+                .attr("transform", `translate(${margin}, ${margin})`)
+                .call(yAxis)
+                .call(g => g.selectAll(".tick line").clone()
+                    .attr("x2", plotWidth)
+                    .attr("stroke-opacity", 0.1));
+            setInit(true);
+        }
     }, []);
 
 	return (

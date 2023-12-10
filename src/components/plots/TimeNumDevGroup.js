@@ -2,7 +2,9 @@ import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 
 import { criteria, labels, devGroupcolor } from "../../common/Constants";
-import { useTimeThreshold, useTime, useGraphNumber } from "../../common/DataContext";
+import { useSelectedAP, useTimeThreshold, useTime, useGraphNumber } from "../../common/DataContext";
+import { processDevNumDevGroupData, processTimeTputWithFairnessData } from "../../common/DataProcessing";
+import TimeFairness from "./TimeFairness";
 
 const TimeNumDevGroup = (props) => {
     
@@ -11,67 +13,78 @@ const TimeNumDevGroup = (props) => {
     const height = props.height;
     const plotMargin = props.plotMargin;
     const titleHeight = props.titleHeight;
+    const bottomHeight = titleHeight+plotMargin-15;
 
     const plotWidth = width-2*plotMargin;
-    const plotHeight = height-3*plotMargin-titleHeight; 
-    const marginTop = 2*plotMargin+props.titleHeight;   
+    // const plotHeight = height-3*plotMargin-titleHeight; 
 
+    const plotHeight = height-4*plotMargin-titleHeight+15; 
+    const marginTop = 2*plotMargin;   
+    // const marginTop = 2*plotMargin+props.titleHeight;   
+
+    // const {selectedAP} = useSelectedAP();
     const {timeThreshold} = useTimeThreshold();
     const {setTime} = useTime();
     const {setGraphNumber} = useGraphNumber();
 
     useEffect(() => {
         const plotSvg = d3.select(plot.current);
-        
         plotSvg.selectAll("*").remove();
+
+        console.log("AP", props.data["key"]);
+        console.log("timeThreshold", timeThreshold);
+        
         // statsData.filter(d => ((d.time >= timethreshold[0]) && (d.time <= timethreshold[1])));
         // console.log(statsData);
 
         // plotSvg.selectAll(".mainrect").remove();
-
-        const data = props.data.filter(d => ((d.time >= timeThreshold[0]) && (d.time <= timeThreshold[1])));
+        let devGroupdata = processDevNumDevGroupData(props.data["throughput"]);
+        let statsData = processTimeTputWithFairnessData([props.data]);
+        devGroupdata = devGroupdata.filter(d => ((d.time >= timeThreshold[0]) && (d.time <= timeThreshold[1])));
+        statsData = statsData.filter(d => ((d.time >= timeThreshold[0]) && (d.time <= timeThreshold[1])));
+        
         // Determine the series that need to be stacked.
         const series = d3.stack()
-            .keys(d3.union(data.map(d => d.label))) // distinct series keys, in input order
+            .keys(d3.union(devGroupdata.map(d => d.label))) // distinct series keys, in input order
             .value(([, D], key) => D.get(key).count) // get value for each series key and stack
-        (d3.index(data, d => d.time, d => d.label)); // group by stack then series key
+        (d3.index(devGroupdata, d => d.time, d => d.label)); // group by stack then series key
          //console.log("series", series);
-
+        
         // Prepare the scales for positional and color encodings.
         const x = d3.scaleBand()
-            .domain(d3.groupSort(data, D => d3.sum(D, d => d.time), d => d.time))
+            .domain(d3.groupSort(devGroupdata, D => d3.sum(D, d => d.time), d => d.time))
             // .domain(d3.groupSort(statsData, d => d.time))
             .range([0, plotWidth])
             .padding(0.1);
 
         const y = d3.scaleLinear()
-            .domain([0, d3.max(series, d => d3.max(d, d => d[1])+1)])
+            .domain([0, d3.max(series, d => d3.max(d, d => d[1])*2)])
             .rangeRound([plotHeight, 0]);
 
         const xAxisScale = d3.scaleLinear()
-            .domain([ d3.min(data, d => d.time), d3.max(data, d => d.time) ])
+            .domain([ d3.min(devGroupdata, d => d.time), d3.max(devGroupdata, d => d.time) ])
             .range([0, plotWidth]);
         let xAxis = d3.axisBottom().scale(xAxisScale).ticks(30).tickSizeOuter(0);
-        let yAxis = d3.axisLeft().scale(y).ticks(plotHeight / 80);
+        let yAxis = d3.axisRight().scale(y).ticks(plotHeight / 80);
 
         // plotSvg.select(".x.axis").remove();
         // plotSvg.select(".y.axis").remove();
         // Append the horizontal axis atop the area.
         plotSvg.append("g").attr("class", "x axis")
             .attr("transform", `translate(${plotMargin}, ${plotHeight + marginTop})`)
-            .transition().duration(200)
+            // .transition().duration(200)
             .call(xAxis);
         
         // Add the y-axis, remove the domain line, add grid lines and a label.
-        plotSvg.append("g").attr("class", "y axis")
-            .attr("transform", `translate(${plotMargin}, ${marginTop})`)
-            .transition().duration(200)
+        plotSvg.append("g").attr("class", "right y axis")
+            .attr("transform", `translate(${plotWidth+plotMargin}, ${marginTop})`)
+            // .transition().duration(200)
             .call(yAxis);
 
-        plotSvg.selectAll(".y.axis")
+        plotSvg.selectAll(".right.y.axis")
             .call(g => g.select(".domain").remove())
             .call(g => g.selectAll(".tick line").clone()
-                .attr("x2", plotWidth)
+                .attr("x2", -plotWidth)
                 .attr("stroke-opacity", 0.1));
         
         // Rotate the x-axis labels.
@@ -101,7 +114,7 @@ const TimeNumDevGroup = (props) => {
             .attr("y", d => y(d[1]))
             .attr("height", d => y(d[0]) - y(d[1]))
             .attr("width", x.bandwidth())
-            .attr("stroke", "gray")
+            .attr("stroke", "grey")
             .attr("stroke-opacity", 0.2)
             .on('mouseover', function() {
                 const className = d3.select(this).attr("class");
@@ -163,11 +176,62 @@ const TimeNumDevGroup = (props) => {
             .attr("height", 3)
             .attr("fill", "black")
             .attr("stroke", "black");
+
+        // append total throghput line
+        let tputYScale = d3.scaleLinear()
+                            .domain([
+                                0,
+                                d3.max(statsData, d => d.total)+5
+                            ])
+                            .range([plotHeight, 0]);
+        let tputYAxis = d3.axisLeft()
+                            .scale(tputYScale)
+                            .ticks(10);
+        // Append total throughput line
+        plotSvg.append("path")
+                .attr("transform", `translate(${plotMargin}, ${marginTop})`)
+                // .attr("class", d=>`${d[0]} main contents selected`)
+                .attr("fill", "none")
+                .attr("stroke", "#54565c")
+                .attr("stroke-width", 5)
+                .attr("d", d3.line()
+                        .x(d => xAxisScale(d.time))
+                        .y(d => tputYScale(d.total))
+                        .curve(d3.curveLinear)(statsData));
+
+        // Append average throughput line
+        plotSvg.append("path")
+                .attr("transform", `translate(${plotMargin}, ${marginTop})`)
+                .attr("fill", "none")
+                .attr("stroke", "#54565c")
+                // .attr("class", d=>`${d[0]} main contents selected`)
+                .attr("stroke-width",5)
+                .attr("d", d3.line()
+                        .x(d => xAxisScale(d.time))
+                        .y(d => tputYScale(d.avg))
+                        .curve(d3.curveLinear)(statsData));
+        
+        plotSvg.append("g")
+                .attr("transform", `translate(${plotMargin}, ${marginTop})`)
+                .attr("class", "left y axis")
+                // .transition().duration(200)
+                .call(tputYAxis);
+        plotSvg.selectAll(".left.y.axis")
+                .call(g => g.select(".domain").remove());
+
         
     },[timeThreshold]);
 
     return (
-        <svg ref={plot} width={width} height={height}/> 
+        <React.Fragment>
+            <svg ref={plot} width={width} height={height-titleHeight-plotMargin+15}/> 
+            <TimeFairness 
+                data={processTimeTputWithFairnessData([props.data])} 
+                width={width} 
+                height={bottomHeight} 
+                plotMargin={plotMargin} 
+            />
+        </React.Fragment>
     );
 };
 
