@@ -54,6 +54,7 @@ const TimeTputNumDev = (props) => {
             if(datax1 - datax0 > 1){
                 setTimeThreshold([datax0,datax1]); 
             }
+            setGraphNumber(2);
             setBrushed(true);
         }
         brushdoing = false;
