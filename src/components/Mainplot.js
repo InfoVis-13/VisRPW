@@ -131,7 +131,13 @@ const Mainplot = (props) => {
       <Grid item xs={4}>
         <Stack spacing={`${padding}px`}>
           <Stack direction="row" spacing={`${padding}px`} useFlexGap flexWrap="wrap">
-            <TotalSummary width={(leftGridInnerWidth-padding)/2} height={leftSubGridInnerHeight} margin={plotMargin} padding={padding}/>
+            <TotalSummary 
+              data={data}
+              width={(leftGridInnerWidth-padding)/2} 
+              height={leftSubGridInnerHeight} 
+              margin={plotMargin} 
+              padding={padding}
+            />
             <SummaryAP 
               width={(leftGridInnerWidth-padding)/2} 
               height={leftSubGridInnerHeight} 

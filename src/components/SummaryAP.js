@@ -1,10 +1,8 @@
 import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 
-import config from '../data/config.json';
 import configAp1 from '../data/config_ap1.json';
 import configAp2 from '../data/config_ap2.json';
-import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Stack from '@mui/material/Stack';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
