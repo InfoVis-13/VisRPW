@@ -63,6 +63,7 @@ const TimeTputNumDev = (props) => {
     function brushedEnd({selection}) {
         if(selection === null) {
             setGraphNumber(1);
+            setBrushed(true);
         }
         else{
             setGraphNumber(2);

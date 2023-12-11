@@ -3,7 +3,7 @@ import * as d3 from "d3";
 
 import { StyledTypography, componentStyles } from "../common/StyledComponents.js";
 import { apColor } from "../common/Constants.js";
-import { useGraphNumber, useTimeThreshold } from "../common/DataContext.js";
+import { useGraphNumber, useTimeThreshold, useBrushed } from "../common/DataContext.js";
 
 const GraphPlot = (props) => {
 
@@ -20,6 +20,7 @@ const GraphPlot = (props) => {
     const [init, setInit] = useState(false);
     const {setTimeThreshold} = useTimeThreshold();
     const {setGraphNumber} = useGraphNumber();
+    const {setBrushed} = useBrushed();
 
     const brush = d3.brushX()
     .extent([[0, 0], [plotWidth, plotHeight]])
@@ -41,6 +42,7 @@ const GraphPlot = (props) => {
         brushdoing = true;
         if (selection === null) {
             setGraphNumber(1);
+            setBrushed(true);
             // init
             // d3.select(".plotStackGroup").style("display","none");
             // d3.select(".plotTputFair").style("display","");

@@ -136,7 +136,7 @@ const TimeNumDevGroup = (props) => {
         
         // Add a legend for each color.
         plotSvg.append("g")
-            .attr("transform", `translate(${plotWidth+plotMargin/2}, ${plotMargin-15})`)
+            .attr("transform", `translate(${plotWidth+plotMargin/2}, ${plotMargin-10})`)
             .selectAll("text")
             .data(["Device Status", ...labels])
             .enter()
@@ -153,7 +153,7 @@ const TimeNumDevGroup = (props) => {
             .attr("font-size", 12);
 
         plotSvg.append("g")
-            .attr("transform", `translate(${plotWidth+plotMargin/2}, ${plotMargin-15})`)
+            .attr("transform", `translate(${plotWidth+plotMargin/2}, ${plotMargin-10})`)
             .selectAll("rect")
             .data(labels)
             .join("rect")
@@ -166,7 +166,7 @@ const TimeNumDevGroup = (props) => {
             .attr("stroke-opacity", 0.3);
         
         plotSvg.append("g")
-            .attr("transform", `translate(${plotWidth+plotMargin/2}, ${plotMargin-15})`)
+            .attr("transform", `translate(${plotWidth+plotMargin/2}, ${plotMargin-10})`)
             .selectAll("rect")
             .data(labels)
             .join("rect")
@@ -218,6 +218,27 @@ const TimeNumDevGroup = (props) => {
                 .call(tputYAxis);
         plotSvg.selectAll(".left.y.axis")
                 .call(g => g.select(".domain").remove());
+                plotSvg.selectAll(".left.y.axis")
+                .append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("x", -plotHeight/2+plotMargin*2)
+                .attr("y", 15)
+                .attr("text-anchor", "end")
+                .attr("fill", "black")
+                .attr("font-family", "Pretendard")
+                .attr("font-size", 12)
+                .text("Throughput (Mbps)");
+        
+        plotSvg.selectAll(".right.y.axis")
+                .append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("x", -plotHeight/2+plotMargin*2)
+                .attr("y", -5)
+                .attr("text-anchor", "end")
+                .attr("fill", "black")
+                .attr("font-family", "Pretendard")
+                .attr("font-size", 12)
+                .text("Number of Devices");
 
         
     },[timeThreshold]);

@@ -5,10 +5,11 @@ import { useGraphNumber, useSelectedAP, useTimeThreshold, useBrushed } from "../
 
 const TimeFairness = (props) => {
 
-    const {selectedAP, setSelectedAP} = useSelectedAP();
+    const {selectedAP} = useSelectedAP();
     const {graphNumber} = useGraphNumber();
     const {timeThreshold} = useTimeThreshold(); 
     const {brushed, setBrushed} = useBrushed();
+    const [init, setInit] = useState(false);
     const plot = useRef(null);
 
     const width = props.width;
@@ -29,7 +30,6 @@ const TimeFairness = (props) => {
         }
 
         if(brushed){
-            // plotSvg.selectAll("*").remove();
             // Add a container for each series.
             const groupedData = d3.group(data, d => d.key);
             const numAps = groupedData.size;
@@ -49,18 +49,21 @@ const TimeFairness = (props) => {
                                     // .interpolate(d3.interpolateHcl);
             const fairnessHeight = (plotHeight-20)/numAps/2>15?15:(plotHeight-20)/numAps/2;
             let idx = 0;
-            plotSvg.append("g")
-                .attr("transform", `translate(${plotMargin}, 7)`)
-                .selectAll("text")
-                .data(["Fairness"])
-                .join("text")
-                .attr("x", 0)
-                .attr("y", 0)
-                .attr("text-anchor", "middle")
-                .attr("alignment-baseline", "middle")
-                .attr("font-size", 13)
-                .attr("font-weight", "bold")
-                .text(d => d);
+            if(!init){
+                plotSvg.append("g")
+                    .attr("transform", `translate(${plotMargin}, 7)`)
+                    .selectAll("text")
+                    .data(["Fairness"])
+                    .join("text")
+                    .attr("x", 0)
+                    .attr("y", 0)
+                    .attr("text-anchor", "middle")
+                    .attr("alignment-baseline", "middle")
+                    .attr("font-family", "Pretendard")
+                    .attr("font-size", 13)
+                    .attr("font-weight", "600")
+                    .text(d => d);
+            }
             for(var key of groupedData.keys()) {
                 plotSvg.append("g")
                     .attr("transform", `translate(${plotMargin}, 20)`)
@@ -87,21 +90,25 @@ const TimeFairness = (props) => {
                     .attr("fill", "none")
                     .attr("stroke", "black")
                     .attr("stroke-width", 0.5);
-                plotSvg.append("g")
-                    .attr("transform", `translate(${plotMargin-15}, 20)`)
-                    .selectAll("text")
-                    .data([key])
-                    .join("text")
-                    .attr("x", 0)
-                    .attr("y", idx*(fairnessHeight+fairnessHeight/2)+fairnessHeight/2+1)
-                    .attr("class", `${key} main contents selected`)
-                    .attr("text-anchor", "middle")
-                    .attr("alignment-baseline", "middle")
-                    .attr("font-size", 10)
-                    .text(d => d);  
+                if(!init){
+                    plotSvg.append("g")
+                        .attr("transform", `translate(${plotMargin-15}, 20)`)
+                        .selectAll("text")
+                        .data([key])
+                        .join("text")
+                        .attr("x", 0)
+                        .attr("y", idx*(fairnessHeight+fairnessHeight/2)+fairnessHeight/2+1)
+                        .attr("class", `${key} main contents selected`)
+                        .attr("text-anchor", "middle")
+                        .attr("alignment-baseline", "middle")
+                        .attr("font-family", "Pretendard")
+                        .attr("font-size", 10.5)
+                        .text(d => d);  
+                }
                 idx++;
             }
             setBrushed(false);
+            setInit(true);
         }
 
         d3.selectAll('*').transition().duration(100).attr("opacity", 1);

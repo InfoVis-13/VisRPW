@@ -1,12 +1,11 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect } from "react";
 import * as d3 from "d3";
 import Typography from "@mui/material/Typography";
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Stack from '@mui/material/Stack';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 
-import { criteria, labels, devGroupcolor } from "../../common/Constants";
-import { StyledTypography } from "../../common/StyledComponents";
+import { labels, devGroupcolor } from "../../common/Constants";
 
 const TputNumPktWithPdr = (props) => {
 

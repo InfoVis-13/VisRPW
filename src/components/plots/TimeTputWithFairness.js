@@ -69,6 +69,9 @@ const TimeTputWithFairness = (props) => {
     function brushedEnd({selection}) {
         if(selection === null) {
             setGraphNumber(1);
+            setSelectedAP(-1);
+            d3.select("#brush").remove();
+            setBrushed(true);
         }
         else{
             setGraphNumber(2);
@@ -253,10 +256,32 @@ const TimeTputWithFairness = (props) => {
                     .attr("class", "right y axis")
                     .transition().duration(200)
                     .call(devYAxis);
+            
+            plotSvg.selectAll(".left.y.axis")
+                    .append("text")
+                    .attr("transform", "rotate(-90)")
+                    .attr("x", -plotHeight/2+plotMargin*2)
+                    .attr("y", 15)
+                    .attr("text-anchor", "end")
+                    .attr("fill", "black")
+                    .attr("font-family", "Pretendard")
+                    .attr("font-size", 12)
+                    .text("Throughput (Mbps)");
+            
+            plotSvg.selectAll(".right.y.axis")
+                    .append("text")
+                    .attr("transform", "rotate(-90)")
+                    .attr("x", -plotHeight/2+plotMargin*2)
+                    .attr("y", -5)
+                    .attr("text-anchor", "end")
+                    .attr("fill", "black")
+                    .attr("font-family", "Pretendard")
+                    .attr("font-size", 12)
+                    .text("Number of Devices");
         
             // Add a legend for each color.
             plotSvg.append("g")
-                .attr("transform", `translate(${plotWidth+plotMargin/2}, ${plotMargin-15})`)
+                .attr("transform", `translate(${plotWidth+plotMargin/2}, ${plotMargin-10})`)
                 .selectAll("text")
                 .data(["Avg. Throughput", "Total Throughput", "Num. Devices"])
                 .enter()
@@ -267,10 +292,11 @@ const TimeTputWithFairness = (props) => {
                 .attr("y", 22)
                 .attr("text-anchor", "middle")
                 .attr("alignment-baseline", "middle")
+                .attr("font-family", "Pretendard")
                 .attr("font-size", 12);
             
             plotSvg.append("g")
-                .attr("transform", `translate(${plotWidth+plotMargin/2}, ${plotMargin-15})`)
+                .attr("transform", `translate(${plotWidth+plotMargin/2}, ${plotMargin-10})`)
                 .selectAll("text")
                 .data(groupedData.keys())
                 .enter()
@@ -279,12 +305,13 @@ const TimeTputWithFairness = (props) => {
                 .attr("class", "legend")
                 .attr("x", 2)
                 .attr("y", (d, i)=> -((numAps-1-i)*13)+6.5)
+                .attr("font-family", "Pretendard")
                 .attr("text-anchor", "middle")
                 .attr("alignment-baseline", "middle")
                 .attr("font-size", 12);
 
             apColor.map((color, idx) => {plotSvg.append("g")
-                .attr("transform", `translate(${plotWidth+plotMargin/2}, ${plotMargin-15})`)
+                .attr("transform", `translate(${plotWidth+plotMargin/2}, ${plotMargin-10})`)
                 .selectAll("rect")
                 .data(color)
                 .join("rect")
@@ -298,7 +325,7 @@ const TimeTputWithFairness = (props) => {
             });
             
             plotSvg.append("g")
-                .attr("transform", `translate(${plotWidth+plotMargin/2}, ${plotMargin-15})`)
+                .attr("transform", `translate(${plotWidth+plotMargin/2}, ${plotMargin-10})`)
                 .selectAll("rect")
                 .data(["Avg.", "Total", "Num. Devices"])
                 .join("rect")
