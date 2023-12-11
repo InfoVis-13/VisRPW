@@ -47,7 +47,7 @@ const TputNumPktWithPdr = (props) => {
         // in blur
         filter.append("feGaussianBlur")
             .attr("in", "SourceAlpha")
-            .attr("stdDeviation", 3)
+            .attr("stdDeviation", 0.5)
             .attr("result", "blur");
 
         // translate output of Gaussian blur to the right and downwards with 2px
@@ -75,12 +75,19 @@ const TputNumPktWithPdr = (props) => {
             console.log("staData", staData);
             label.style("visibility", null);
             let dy = -3;
-            d3.selectAll(".pie").attr("opacity", 0.5);
-            d3.select(this).attr("opacity", 1)
-                .attr("stroke", devGroupcolor(staData.status))
-                .attr("stroke-width", 2)
-                .attr("stroke-opacity", 1)
+            d3.selectAll(".pie.pdr").attr("opacity", 0.5);
+            d3.selectAll(".pie.numPkt").attr("opacity", 0.1);
+            d3.selectAll(`.idx-${idx}`)
+                // .attr("stroke-width", 2)
+                .attr("opacity", 1);
+            d3.selectAll(`.idx-${idx}.pie.numPkt`)
+                .attr("fill-opacity", 0.3)
                 .style("filter", "url(#drop-shadow)");
+            // d3.select(this).attr("opacity", 1)
+            //     .attr("stroke", devGroupcolor(staData.status))
+            //     .attr("stroke-width", 2)
+            //     .attr("stroke-opacity", 1)
+            //     .style("filter", "url(#drop-shadow)");
                 // .style("filter", "url(#shadow)");
             Object.keys(staData).forEach((key, idx) => {
                 console.log("key", key);
@@ -115,52 +122,60 @@ const TputNumPktWithPdr = (props) => {
             label.style("visibility", "hidden");
             label.selectAll("tspan").remove();
             d3.selectAll(".pie")
-                .attr("stroke", 'grey')
-                .attr("stroke-width", 2)
-                .attr("stroke-opacity", 0.2)
+                .attr("stroke-width", 0.5)
                 .attr("opacity", 1)
+                .style("filter", null);
+            d3.selectAll(".pie.numPkt")
+                .attr("fill-opacity", 0.3)
                 .style("filter", null);
         }
 
         let pie = d3.pie().value(d => d.throughput+0.3);
         const radius = plotHeight>plotWidth? plotWidth/2: plotHeight/2;
+        let reverseRaiusScale = d3.scaleLinear()
+            .domain([radius/2, radius])
+            .range([0, d3.max(value, d => d.numTxPkts)]);
+        let defautDomain = reverseRaiusScale(radius/2+radius/32)<10? 10: reverseRaiusScale(radius/2+radius/32);
         let outterRadiusScale = d3.scaleLinear()
-            .domain([0, d3.max(value, d => d.numTxPkts)])
-            .range([radius/2+10, radius]);
+            .domain([0, d3.max(value, d => d.numTxPkts)+defautDomain])
+            .range([radius/2, radius]);
         let pktArc = d3.arc()
             .innerRadius(radius/2)
-            .outerRadius(d => outterRadiusScale(d.data.numTxPkts))
+            .outerRadius(d => outterRadiusScale(d.data.numTxPkts+defautDomain))
             .cornerRadius(1)
             .padAngle(0.008);
         let pdrArc = d3.arc()
             .innerRadius(radius/2)
-            .outerRadius(d => outterRadiusScale(d.data.pdr*d.data.numTxPkts/100))
+            // .outerRadius(d => outterRadiusScale((d.data.pdr)*(d.data.numTxPkts)/100.0))
+            .outerRadius(d => outterRadiusScale((d.data.numTxPkts+defautDomain)*d.data.pdr/100))
             .cornerRadius(1)
             .padAngle(0.008);
     
-        let pieChart = plotSvg.append("g")
+        let pktpieChart = plotSvg.append("g")
+            .attr("transform", `translate(${plotWidth/3+plotMargin+15}, ${plotHeight/2+plotMargin})`);
+        let pdrpieChart = plotSvg.append("g")
             .attr("transform", `translate(${plotWidth/3+plotMargin+15}, ${plotHeight/2+plotMargin})`);
         // Append piechart about number of packets.
-        pieChart.selectAll("path")
+        pktpieChart.selectAll("path")
             .data(pie(value))
             .join("path")
             .attr("d", pktArc)
-            .attr("fill", 'grey')
-            .attr("class", (d, i)=> `idx-${i} pie`)
-            .attr("stroke", 'grey')
-            .attr("stroke-width", 2)
+            .attr("fill", d => devGroupcolor(d.data.status))
+            .attr("class", (d, i)=> `idx-${i} pie numPkt`)
+            .attr("fill-opacity", 0.3)
+            .attr("stroke", d => devGroupcolor(d.data.status))
+            .attr("stroke-width", 0.5)
             .on("mouseover", mouseover)
             .on("mouseout", mouseout);
         // Append piechart about packet delivery ratio.
-        pieChart.selectAll("path")
+        pdrpieChart.selectAll("path")
             .data(pie(value))
             .join("path")
             .attr("d", pdrArc)
             .attr("fill", d => devGroupcolor(d.data.status))
-            .attr("class", (d, i)=> `idx-${i} pie`)
-            .attr("stroke", 'grey')
-            .attr("stroke-width", 2)
-            .attr("stroke-opacity", 0.2)
+            .attr("class", (d, i)=> `idx-${i} pie pdr`)
+            .attr("stroke", d => devGroupcolor(d.data.status))
+            .attr("stroke-width", 0.5)
             .on("mouseover", mouseover)
             .on("mouseout", mouseout);
 

@@ -108,7 +108,7 @@ export function processTputNumPktWithPdr(data, time) {
             "id": `sta${i}`,
             "throughput": throughput,
             "pdr": data["pdr"][timeIdx][`sta${i}`],
-            "numTxPkts": data["numTxPkts"][timeIdx][`sta${i}`],
+            "numTxPkts": data["numTxPkts"][timeIdx][`sta${i}`]+5,
             "status": labels[labIdx]
         })
         cnt++;
