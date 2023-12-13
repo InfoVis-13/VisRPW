@@ -51,7 +51,6 @@ export function processTimeTputWithFairnessData(data) {
 
 export function processDevNumDevGroupData(data) {
     let statsData = [];
-    console.log(data);
     for(let i=0; i<data.length; i++) {
         let d = data[i];
         let eachData = {
@@ -72,7 +71,6 @@ export function processDevNumDevGroupData(data) {
             cnt++;
             if (cnt === d.number) break;
         }
-        console.log(eachData);
         for (let j=0; j<labels.length; j++) {
         statsData.push({
             "time": d.time,
@@ -83,4 +81,43 @@ export function processDevNumDevGroupData(data) {
         }
     }
     return statsData;
+}
+
+export function processTputNumPktWithPdr(data, time) {
+    let statsData = [];
+    const key = data["key"];
+    let timeIdx = 0;
+    let number = 0;
+    let cnt = 0;
+    console.log("time", time);
+    console.log("data", data);
+    for(timeIdx; timeIdx<data["throughput"].length; timeIdx++) {
+        if (data["throughput"][timeIdx]["time"] === time) break;
+    }
+    console.log("timeIdx", timeIdx);
+    number = data["throughput"][timeIdx]["number"];
+    for (let i=1; ;i++) {
+        if (data["throughput"][timeIdx][`sta${i}`] === -1.0) continue;
+        const throughput = data["throughput"][timeIdx][`sta${i}`];
+        let labIdx = 0;
+        for(labIdx; labIdx<criteria.length; labIdx++){
+            if(throughput <= criteria[labIdx]) break;
+        }
+        console.log("label", labels[labIdx]);
+        statsData.push({
+            "id": `sta${i}`,
+            "throughput": throughput,
+            "pdr": data["pdr"][timeIdx][`sta${i}`],
+            "numTxPkts": data["numTxPkts"][timeIdx][`sta${i}`]+5,
+            "status": labels[labIdx]
+        })
+        cnt++;
+        if (cnt === number) break;
+    }
+    return {
+        "key": key,
+        "time": time,
+        "number": number,
+        "value": statsData
+    };
 }

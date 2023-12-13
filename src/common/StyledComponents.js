@@ -19,12 +19,14 @@ export const StyledAccordionSummary = withStyles({
     fontFamily: "Pretendard",
     fontWeight: "bold",
     root: {
-        minHeight: 30,
+        display: "flex",
+        padding: "0px 16px",
+        minHeight: 28,
         maxHeight: 30,
         marginTop: 5,
         backgroundColor: "#ebebeb",
         '&.Mui-expanded': {
-            minHeight: 30,
+            minHeight: 28,
             maxHeight: 30,
         }
     },
@@ -45,14 +47,14 @@ export const StyledTypography = withStyles({
     root: {
         fontFamily: "Pretendard",
         fontSize: (props) => {
-            console.log(window.innerWidth);
-            if (props.variant === "h6") return window.innerWidth>=1200? 22: (window.innerWidth>=600? 22: 18); //21
-            else if (props.variant === "subtitle1") return window.innerWidth>1200? 19: (window.innerWidth >= 600? 18 : 16); //18
-            else return window.innerWidth>=1200? 17: (window.innerWidth >= 600? 15 : 14); //16
-
-            // if (props.variant === "h6") return "2.5vh"; //21
-            // else if (props.variant === "subtitle1") return "2.2vh"; //18
-            // else return "1.8vh"; //16
+            // console.log("innerWidth: ", window.screen.width);
+            // if (props.variant === "h6") return window.screen.width>=1200? 22: (window.screen.width>=600? 20: 18); //21
+            // else if (props.variant === "subtitle1") return window.screen.width>1200? 19: (window.screen.width >= 600? 17 : 15); //18
+            // else return window.screen.width>=1200? 17: (window.screen.width >= 600? 15 : 14); //16
+            
+            if (props.variant === "h6") return "1.3vw"; //21
+            else if (props.variant === "subtitle1") return "1.15vw"; //18
+            else return "1vw"; //16
         },
         fontWeight: (props) => {
             if (props.variant === "h6") return "500";
@@ -61,6 +63,10 @@ export const StyledTypography = withStyles({
         flexGrow: 1,
         pl:1,
         mt:1,
+        position: (props) => {
+            return props.variant === "subtitle2"? "absoulte": "relative";
+        },
+        bottom: 0,
     }
 })(Typography);
 
